@@ -46,7 +46,8 @@ import {
   startReconnectionSequence,
   executeReconnectAttempt,
   showTabContextMenu,
-  duplicateTab
+  duplicateTab,
+  registerTerminalManagerDependencies
 } from './terminal/terminalManager.js';
 import { showMultiExecutionModal } from './terminal/multiExecution.js';
 import { openBroadcastDialog } from './terminal/broadcast.js';
@@ -1337,6 +1338,12 @@ export async function init() {
       showAuthChallengeModal(data);
     });
   }
+
+  registerTerminalManagerDependencies({
+    switchSidebarView,
+    refreshSFTP,
+    renderTree: refreshTree
+  });
 
   await refreshTree();
   initWorkspace();

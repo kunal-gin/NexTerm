@@ -191,7 +191,13 @@ export function createTerminalInstance(profile, userSettings) {
     Object.assign(themeObj, profile.ansiColors);
   }
 
-  const term = new Terminal({
+  const TerminalClass = window.Terminal || (typeof Terminal !== "undefined" ? Terminal : null);
+  if (!TerminalClass) {
+    console.error("[terminal] Terminal class is not defined. Ensure vendor/xterm.js is loaded.");
+    throw new Error("Terminal class is not defined. Ensure vendor/xterm.js is loaded.");
+  }
+
+  const term = new TerminalClass({
     fontFamily: profile.fontFamily || userSettings.fontFamily,
     fontSize: profile.fontSize || userSettings.fontSize,
     cursorBlink: profile.cursorBlink !== undefined ? profile.cursorBlink : userSettings.cursorBlink,
@@ -208,9 +214,10 @@ export function createTerminalInstance(profile, userSettings) {
 
   let fitAddon = null;
   try {
-    if (typeof FitAddon !== "undefined") {
-      fitAddon = typeof FitAddon.FitAddon === "function" ? new FitAddon.FitAddon() : new FitAddon();
-      term.loadAddon(fitAddon);
+    const FitClass = window.FitAddon?.FitAddon || window.FitAddon || (typeof FitAddon !== "undefined" ? FitAddon : null);
+    if (FitClass) {
+      fitAddon = typeof FitClass === "function" ? new FitClass() : (typeof FitClass.FitAddon === "function" ? new FitClass.FitAddon() : null);
+      if (fitAddon) term.loadAddon(fitAddon);
     }
   } catch (e) {
     console.warn("FitAddon error:", e);
@@ -218,9 +225,10 @@ export function createTerminalInstance(profile, userSettings) {
 
   let searchAddon = null;
   try {
-    if (typeof SearchAddon !== "undefined") {
-      searchAddon = typeof SearchAddon.SearchAddon === "function" ? new SearchAddon.SearchAddon() : new SearchAddon();
-      term.loadAddon(searchAddon);
+    const SearchClass = window.SearchAddon?.SearchAddon || window.SearchAddon || (typeof SearchAddon !== "undefined" ? SearchAddon : null);
+    if (SearchClass) {
+      searchAddon = typeof SearchClass === "function" ? new SearchClass() : (typeof SearchClass.SearchAddon === "function" ? new SearchClass.SearchAddon() : null);
+      if (searchAddon) term.loadAddon(searchAddon);
     }
   } catch (e) {
     console.warn("SearchAddon error:", e);

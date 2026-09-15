@@ -60,7 +60,7 @@ export async function refreshSFTP(targetPath = "") {
   fileListEl.innerHTML = `<div class="sftp-empty-hint">Loading files from ${escapeHtml(path)}...</div>`;
 
   try {
-    if (window.go && window.go.main && window.go.main.App) {
+    if (window.go && window.go.main && window.go.main.App && typeof window.go.main.App.SFTPList === "function") {
       const res = await window.go.main.App.SFTPList(activeTabId, path);
       currentSFTPPath = (res && res.path) || path;
       if (activeTab) activeTab.sftpPath = currentSFTPPath;
