@@ -568,6 +568,16 @@ export function setupEventListeners() {
 
   // ---- Mockup nav rail extras ----
   navRailAction("navRailMonitor", () => openServerMonitor(), false);
+  navRailAction("navRailFollowTerm", () => {
+    switchSidebarView("followterm");
+    const sftpChk = document.getElementById("sftpFollowTermCheckbox");
+    const panelChk = document.getElementById("followTermPanelCheckbox");
+    if (sftpChk && panelChk) panelChk.checked = sftpChk.checked;
+    const pathEl = document.getElementById("followTermCurrentPath");
+    if (pathEl && activeTabId && tabs[activeTabId]) {
+      pathEl.textContent = tabs[activeTabId].sftpPath || tabs[activeTabId].cwd || "—";
+    }
+  });
   navRailAction("navRailRecorder", () => showRecorderDialog(), false);
   navRailAction("navRailScheduler", () => showSchedulerDialog(), false);
   navRailAction("navRailHistory", () => showHistoryDialog(), false);
@@ -621,6 +631,25 @@ export function setupEventListeners() {
   safeClick("navTabMacros", () => switchSidebarView("macros"));
   safeClick("navTabTunnel", () => switchSidebarView("tunnel"));
   safeClick("navTabTools", () => switchSidebarView("tools"));
+  safeClick("navTabFollowTerm", () => {
+    switchSidebarView("followterm");
+    const sftpChk = document.getElementById("sftpFollowTermCheckbox");
+    const panelChk = document.getElementById("followTermPanelCheckbox");
+    if (sftpChk && panelChk) panelChk.checked = sftpChk.checked;
+    const pathEl = document.getElementById("followTermCurrentPath");
+    if (pathEl && activeTabId && tabs[activeTabId]) {
+      pathEl.textContent = tabs[activeTabId].sftpPath || tabs[activeTabId].cwd || "—";
+    }
+  });
+  safeClick("navTabMonitor", () => {
+    switchSidebarView("monitor");
+    const serverEl = document.getElementById("monitorActiveServer");
+    if (serverEl && activeTabId && tabs[activeTabId] && !tabs[activeTabId].isLocal) {
+      serverEl.textContent = tabs[activeTabId].name || tabs[activeTabId].host || activeTabId;
+    } else if (serverEl) {
+      serverEl.textContent = "No SSH connection";
+    }
+  });
 
   // Nexterm SFTP Toolbar Controls
   safeClick("sftpFollowTermBtn", () => {
@@ -773,12 +802,104 @@ export function setupEventListeners() {
   const followCheckbox = document.getElementById("sftpFollowTermCheckbox");
   if (followCheckbox) {
     followCheckbox.addEventListener("change", () => {
+      const sessFollow = document.getElementById("sessionsFollowTermCheckbox");
+      if (sessFollow) sessFollow.checked = followCheckbox.checked;
+      const panelFollow = document.getElementById("followTermPanelCheckbox");
+      if (panelFollow) panelFollow.checked = followCheckbox.checked;
       showToast(followCheckbox.checked ? "Follow terminal folder: ON" : "Follow terminal folder: OFF", followCheckbox.checked ? "success" : "info");
       if (followCheckbox.checked && activeTabId && tabs[activeTabId] && !tabs[activeTabId].isLocal) {
         syncSFTPToCurrentTerminalCwd(activeTabId);
       }
     });
   }
+
+  // SFTP Remote Monitoring checkbox
+  const sftpRemoteMonChk = document.getElementById("sftpRemoteMonitorCheckbox");
+  if (sftpRemoteMonChk) {
+    sftpRemoteMonChk.addEventListener("change", () => {
+      const sessMonChk = document.getElementById("sessionsRemoteMonitorCheckbox");
+      if (sessMonChk) sessMonChk.checked = sftpRemoteMonChk.checked;
+      if (sftpRemoteMonChk.checked) {
+        if (!activeTabId || activeTabId === "home" || !tabs[activeTabId] || tabs[activeTabId].isLocal) {
+          showToast("Connect to an SSH server first to open Server Monitoring", "warning");
+          sftpRemoteMonChk.checked = false;
+          if (sessMonChk) sessMonChk.checked = false;
+          return;
+        }
+        openServerMonitor();
+      }
+    });
+  }
+
+  // Sessions Panel bottom options (MobaXterm parity)
+  const sessionsMonChk = document.getElementById("sessionsRemoteMonitorCheckbox");
+  if (sessionsMonChk) {
+    sessionsMonChk.addEventListener("change", () => {
+      const sftpMonChk = document.getElementById("sftpRemoteMonitorCheckbox");
+      if (sftpMonChk) sftpMonChk.checked = sessionsMonChk.checked;
+      if (sessionsMonChk.checked) {
+        if (!activeTabId || activeTabId === "home" || !tabs[activeTabId] || tabs[activeTabId].isLocal) {
+          showToast("Connect to an SSH server first to open Server Monitoring", "warning");
+          sessionsMonChk.checked = false;
+          if (sftpMonChk) sftpMonChk.checked = false;
+          return;
+        }
+        openServerMonitor();
+      }
+    });
+  }
+
+  const sessionsFollowChk = document.getElementById("sessionsFollowTermCheckbox");
+  if (sessionsFollowChk) {
+    sessionsFollowChk.addEventListener("change", () => {
+      const sftpFollow = document.getElementById("sftpFollowTermCheckbox");
+      if (sftpFollow) sftpFollow.checked = sessionsFollowChk.checked;
+      const panelFollow = document.getElementById("followTermPanelCheckbox");
+      if (panelFollow) panelFollow.checked = sessionsFollowChk.checked;
+      showToast(sessionsFollowChk.checked ? "Follow terminal folder: ON" : "Follow terminal folder: OFF", sessionsFollowChk.checked ? "success" : "info");
+      if (sessionsFollowChk.checked && activeTabId && tabs[activeTabId] && !tabs[activeTabId].isLocal) {
+        syncSFTPToCurrentTerminalCwd(activeTabId);
+      }
+    });
+  }
+
+  // Follow Terminal panel controls
+  safeClick("followTermSyncNowBtn", () => {
+    if (!activeTabId || activeTabId === "home" || !tabs[activeTabId] || tabs[activeTabId].isLocal) {
+      showToast("Open an SSH connection first", "warning");
+      return;
+    }
+    const sftpChk = document.getElementById("sftpFollowTermCheckbox");
+    if (sftpChk) sftpChk.checked = true;
+    const sessChk = document.getElementById("sessionsFollowTermCheckbox");
+    if (sessChk) sessChk.checked = true;
+    const panelChk = document.getElementById("followTermPanelCheckbox");
+    if (panelChk) panelChk.checked = true;
+    syncSFTPToCurrentTerminalCwd(activeTabId);
+    showToast(`SFTP synchronized with terminal folder`, "success");
+  });
+
+  const followTermPanelChk = document.getElementById("followTermPanelCheckbox");
+  if (followTermPanelChk) {
+    followTermPanelChk.addEventListener("change", () => {
+      const sftpChk = document.getElementById("sftpFollowTermCheckbox");
+      if (sftpChk) sftpChk.checked = followTermPanelChk.checked;
+      const sessChk = document.getElementById("sessionsFollowTermCheckbox");
+      if (sessChk) sessChk.checked = followTermPanelChk.checked;
+      showToast(followTermPanelChk.checked ? "Follow terminal folder: ON" : "Follow terminal folder: OFF", followTermPanelChk.checked ? "success" : "info");
+      if (followTermPanelChk.checked && activeTabId && tabs[activeTabId] && !tabs[activeTabId].isLocal) {
+        syncSFTPToCurrentTerminalCwd(activeTabId);
+      }
+    });
+  }
+
+  safeClick("monitorLaunchBtn", () => {
+    if (!activeTabId || activeTabId === "home" || !tabs[activeTabId] || tabs[activeTabId].isLocal) {
+      showToast("Connect to an SSH server first to open Server Monitoring", "warning");
+      return;
+    }
+    openServerMonitor();
+  });
 
   // Path Combobox Dropdown Button & Menu Items
   safeClick("sftpPathDropdownBtn", (e) => {
