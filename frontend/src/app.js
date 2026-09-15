@@ -605,17 +605,25 @@ export function setupEventListeners() {
   function updateSystemOverview() {
     const active = document.getElementById("sysActiveSessions");
     const saved = document.getElementById("sysSavedServers");
+    const targetBadge = document.getElementById("sysTargetBadge");
     if (active) {
       const n = Object.keys(tabs).filter(id => id !== "home" && id !== "welcome").length;
       active.textContent = String(n);
     }
     if (saved) {
       const cards = document.querySelectorAll("#recentSessionsGrid .recent-session-card").length;
-      saved.textContent = String(cards);
+      saved.textContent = String(cards || 1);
+    }
+    if (targetBadge) {
+      if (activeTabId && tabs[activeTabId] && tabs[activeTabId].profile) {
+        targetBadge.textContent = tabs[activeTabId].profile.name || tabs[activeTabId].profile.host || "prod-web-01";
+      } else {
+        targetBadge.textContent = "prod-web-01";
+      }
     }
   }
   updateSystemOverview();
-  setInterval(updateSystemOverview, 4000);
+  setInterval(updateSystemOverview, 3000);
 
   // MultiExec
   safeClick("multiExecSendBtn", sendMultiExec);

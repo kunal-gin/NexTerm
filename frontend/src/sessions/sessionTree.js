@@ -262,7 +262,28 @@ export async function refreshTree(filter = "") {
         children: [
           { id: "f1", name: "Production", expanded: true, children: [] },
           { id: "f2", name: "UAT", expanded: true, children: [] },
-          { id: "f3", name: "Testing", expanded: true, children: [] },
+          {
+            id: "f3",
+            name: "Testing",
+            expanded: true,
+            children: [
+              {
+                id: "sess_pin",
+                name: "pin",
+                isFolder: false,
+                session: {
+                  id: "sess_pin",
+                  name: "pin",
+                  protocol: "ssh",
+                  host: "192.168.1.7",
+                  port: 22,
+                  username: "pin",
+                  environment: "testing",
+                  color: "#10b981"
+                }
+              }
+            ]
+          },
           { id: "f4", name: "Local", expanded: true, children: [] },
           { id: "f5", name: "Client", expanded: true, children: [] },
           { id: "f6", name: "User", expanded: true, children: [] },
@@ -667,7 +688,7 @@ export function updateRecentSessionsGrid(targetNode = null, filterText = "") {
 
   if (section) section.style.display = "block";
 
-  if (allSessions.length === 0) {
+  if (allSessions.length === 0 && groups.length === 0) {
     grid.innerHTML = `
       <div class="empty-saved-sessions-card">
         <div style="font-size:28px; margin-bottom:8px;">🌐</div>
