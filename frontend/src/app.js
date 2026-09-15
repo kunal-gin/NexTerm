@@ -57,6 +57,10 @@ import { showRecorderDialog, toggleRecording } from './terminal/sessionRecorder.
 import { showSchedulerDialog, initScheduler } from './terminal/scheduler.js';
 import { showHistoryDialog } from './terminal/cmdHistory.js';
 import { showServerExtrasDialog } from './terminal/serverExtras.js';
+import { showProcessExplorer } from './terminal/processExplorer.js';
+import { showPortExplorer } from './terminal/portExplorer.js';
+import { showLogExplorer } from './terminal/logExplorer.js';
+import { showCommandIntel } from './terminal/commandIntel.js';
 import { showShortcutsOverlay } from './ui/shortcutsHelp.js';
 import { toggleSessionLogging, isAutoLogEnabled, setAutoLog } from './terminal/terminalManager.js';
 import { showNewSessionDialog, showFolderDialog } from './sessions/sessionDialog.js';
@@ -261,6 +265,38 @@ registerCommandPaletteActions([
     subtitle: "Per-server notes, one-click commands, and startup commands",
     icon: "🗂️",
     action: () => showServerExtrasDialog()
+  },
+  {
+    id: "cmd-processes",
+    category: "Server",
+    title: "Process Explorer...",
+    subtitle: "Live processes on the server, with details and kill",
+    icon: "🧩",
+    action: () => showProcessExplorer()
+  },
+  {
+    id: "cmd-ports",
+    category: "Server",
+    title: "Ports & Services...",
+    subtitle: "Listening ports and the process behind each",
+    icon: "🔌",
+    action: () => showPortExplorer()
+  },
+  {
+    id: "cmd-logs",
+    category: "Server",
+    title: "Log Explorer...",
+    subtitle: "Live-tail a remote log with search, regex and error filters",
+    icon: "📜",
+    action: () => showLogExplorer()
+  },
+  {
+    id: "cmd-intel",
+    category: "Server",
+    title: "Command Intelligence...",
+    subtitle: "Type an intent; get the explicit command to run",
+    icon: "✨",
+    action: () => showCommandIntel()
   }
 ]);
 
@@ -536,6 +572,10 @@ export function setupEventListeners() {
   navRailAction("navRailScheduler", () => showSchedulerDialog(), false);
   navRailAction("navRailHistory", () => showHistoryDialog(), false);
   navRailAction("navRailServerTools", () => showServerExtrasDialog(), false);
+  navRailAction("navRailProcesses", () => showProcessExplorer(), false);
+  navRailAction("navRailPorts", () => showPortExplorer(), false);
+  navRailAction("navRailLogs", () => showLogExplorer(), false);
+  navRailAction("navRailCmdIntel", () => showCommandIntel(), false);
   initScheduler();
   navRailAction("navRailXServer", async () => {
     if (!(window.go && window.go.main && window.go.main.App && window.go.main.App.LaunchXServer)) {

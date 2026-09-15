@@ -34,3 +34,6 @@ Thumbs.db
 *.user
 *.userossc
 *.sln.docstates
+
+# Local AI scratch
+Claude outputs/

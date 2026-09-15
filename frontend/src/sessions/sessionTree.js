@@ -884,7 +884,9 @@ export function switchSidebarView(view) {
     sftp: { viewId: "viewSFTP", tabId: "navTabSFTP" },
     macros: { viewId: "viewMacros", tabId: "navTabMacros" },
     tunnel: { viewId: "viewTunnel", tabId: "navTabTunnel" },
-    tools: { viewId: "viewTools", tabId: "navTabTools" }
+    tools: { viewId: "viewTools", tabId: "navTabTools" },
+    followterm: { viewId: "viewFollowTerm", tabId: "navTabFollowTerm" },
+    monitor: { viewId: "viewMonitor", tabId: "navTabMonitor" }
   };
 
   Object.entries(views).forEach(([v, ids]) => {

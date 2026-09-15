@@ -979,6 +979,9 @@ export function createTab(tabId, profile, isLocal = false, initialState = "Conne
         term.write(`\x1b[1;33m● Authenticating user '${profile.username}'...\x1b[0m\r\n`);
       } else if (st === "Connected") {
         term.write(`\x1b[1;32m● Connected to ${profile.host}\x1b[0m\r\n\r\n`);
+        if (switchSidebarViewFn) switchSidebarViewFn("sftp");
+        const currentSFTPPath = (tabs[tabId] && tabs[tabId].sftpPath) || (profile && profile.initialDir) || "~";
+        if (refreshSFTPFn) refreshSFTPFn(currentSFTPPath);
       } else if (st === "Failed") {
         renderTerminalDiagnosticCard(term, profile, errInfo);
       }
@@ -1355,11 +1358,22 @@ export async function connectToSession(profile, forceNewTab = false) {
           deleteTab(tabId);
         }
       }
+    } else {
+      // Preview / Browser test mode fallback
+      await new Promise(r => setTimeout(r, 300));
+      if (tabs[tabId] && tabs[tabId].term) {
+        tabs[tabId].term.write(`\r\n\x1b[1;32m● Connected to ${profile.host || "192.168.1.7"}\x1b[0m\r\n\r\n`);
+        tabs[tabId].term.write(`Last login: ${new Date().toLocaleString()} from 192.168.1.108\r\n`);
+        tabs[tabId].term.write(`\x1b[1;32m[${profile.username || "pin"}@${(profile.host || "SRV-01").split(".")[0]} ~]$\x1b[0m `);
+      }
     }
     setTabConnectionState(tabId, "Connected");
     if (isAutoLogEnabled() && tabs[tabId]) tabs[tabId].logging = true;
-    showToast(`Connected to ${profile.name}`, "success");
+    showToast(`Connected to ${profile.name || profile.host}`, "success");
     try { runStartupCommands(tabId, profile); } catch (_) {}
+    if (switchSidebarViewFn) switchSidebarViewFn("sftp");
+    const currentSFTPPath = (tabs[tabId] && tabs[tabId].sftpPath) || (profile && profile.initialDir) || "~";
+    if (refreshSFTPFn) refreshSFTPFn(currentSFTPPath);
   } catch (err) {
     const classified = parseClassifiedError(err);
     setTabConnectionState(tabId, "Failed", classified);

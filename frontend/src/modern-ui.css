@@ -2093,3 +2093,71 @@ body, html {
 :root[data-theme="light-modern"] .sx-textarea, :root[data-theme="light-modern"] .sx-input { background: #f8fafc; border-color: #cbd5e1; color: #0f172a; }
 :root[data-theme="light-modern"] .sx-quick-row, :root[data-theme="light-modern"] .sched-row { background: #f8fafc; border-color: #e2e8f0; }
 :root[data-theme="light-modern"] .hist-cmd { color: #1e293b; }
+
+/* ==========================================================================
+   Server-context tools — Process / Port Explorer, Log Explorer, Cmd Intel
+   (reuse .sx-card / .sx-btn / .sched-empty from the automation dialogs)
+   ========================================================================== */
+.proc-card, .log-card, .ci-card { width: min(760px, 96vw); max-height: 85vh; }
+.proc-sort { display: flex; align-items: center; gap: 6px; padding: 10px 18px 4px; font-size: 12px; color: #94a3b8; }
+.proc-list { overflow-y: auto; padding: 8px 14px 16px; }
+.proc-row { display: grid; grid-template-columns: 64px 90px 56px 56px 1fr; gap: 10px; align-items: center; padding: 7px 10px; border-radius: 8px; font-size: 12.5px; }
+.proc-head-row { color: #64748b; font-size: 10.5px; letter-spacing: .4px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 0; }
+.proc-item { cursor: pointer; }
+.proc-item:hover { background: rgba(56,189,248,0.08); }
+.proc-pid { color: #38bdf8; font-family: var(--font-mono,monospace); }
+.proc-user { color: #94a3b8; }
+.proc-cpu, .proc-mem { color: #cbd5e1; font-variant-numeric: tabular-nums; }
+.proc-cmd { color: #e2e8f0; font-family: var(--font-mono,monospace); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proc-detail { padding: 14px 18px; overflow-y: auto; }
+.proc-info { background: #0a0e17; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px; font-size: 12px; color: #cbd5e1; overflow-x: auto; white-space: pre; }
+.proc-kv { display: grid; grid-template-columns: 130px 1fr; gap: 10px; padding: 8px 2px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12.5px; }
+.proc-kv b { color: #94a3b8; font-weight: 600; }
+.proc-kv .mono, .mono { font-family: var(--font-mono,monospace); }
+.proc-kv span { color: #e2e8f0; word-break: break-all; }
+
+/* Ports */
+.port-row { display: grid; grid-template-columns: 80px 60px 110px 1fr 70px; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 8px; font-size: 12.5px; }
+.port-head-row { color: #64748b; font-size: 10.5px; letter-spacing: .4px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 0; }
+.port-item { cursor: pointer; }
+.port-item:hover { background: rgba(56,189,248,0.08); }
+.port-num { color: #34d399; font-family: var(--font-mono,monospace); font-weight: 700; }
+.port-proto { color: #94a3b8; }
+.port-svc { color: #c084fc; }
+.port-proc { color: #e2e8f0; font-family: var(--font-mono,monospace); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.port-pid { color: #38bdf8; font-family: var(--font-mono,monospace); }
+
+/* Log Explorer */
+.log-controls { display: flex; gap: 8px; align-items: center; padding: 10px 18px 0; }
+.log-controls .sx-input { flex: 1; }
+.log-view { margin: 12px 16px 6px; flex: 1; min-height: 200px; max-height: 48vh; overflow-y: auto; background: #0a0e17; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 12px; font-family: var(--font-mono,monospace); font-size: 12px; line-height: 1.5; }
+.log-line { white-space: pre-wrap; word-break: break-word; padding: 1px 0; }
+.log-err { color: #fca5a5; } .log-warn { color: #fcd34d; } .log-info { color: #93c5fd; } .log-debug { color: #64748b; } .log-plain { color: #cbd5e1; }
+.log-foot { display: flex; gap: 8px; align-items: center; padding: 4px 18px 14px; font-size: 11px; }
+.log-badge { padding: 2px 8px; border-radius: 6px; font-weight: 700; }
+.log-badge.err { background: rgba(239,68,68,0.18); color: #fca5a5; }
+.log-badge.warn { background: rgba(245,158,11,0.18); color: #fcd34d; }
+.log-badge.info { background: rgba(56,189,248,0.15); color: #93c5fd; }
+.log-muted { color: #64748b; margin-left: auto; }
+
+/* Command Intelligence */
+.ci-input-row { padding: 16px 18px 8px; }
+.ci-input-row .sx-input { width: 100%; box-sizing: border-box; font-size: 14px; }
+.ci-hints { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 18px 10px; }
+.ci-chip { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-size: 11.5px; padding: 5px 10px; border-radius: 9999px; cursor: pointer; }
+.ci-chip:hover { background: rgba(56,189,248,0.14); color: #38bdf8; }
+.ci-result { padding: 0 18px 18px; overflow-y: auto; }
+.ci-card-plan { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; }
+.ci-plan-label { font-size: 13px; font-weight: 700; color: #f1f5f9; margin-bottom: 8px; }
+.ci-danger { font-size: 10px; background: rgba(239,68,68,0.2); color: #fca5a5; padding: 2px 7px; border-radius: 6px; margin-left: 6px; }
+.ci-cmd { background: #0a0e17; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 12px; font-family: var(--font-mono,monospace); font-size: 12.5px; color: #34d399; white-space: pre-wrap; word-break: break-word; }
+.ci-note { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+.ci-out { margin-top: 10px; }
+.ci-output { background: #0a0e17; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 12px; font-family: var(--font-mono,monospace); font-size: 12px; color: #cbd5e1; max-height: 300px; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+
+/* Light theme */
+:root[data-theme="light-modern"] .proc-info, :root[data-theme="light-modern"] .log-view,
+:root[data-theme="light-modern"] .ci-cmd, :root[data-theme="light-modern"] .ci-output { background: #0f172a; }
+:root[data-theme="light-modern"] .proc-kv span, :root[data-theme="light-modern"] .proc-cmd { color: #0f172a; }
+:root[data-theme="light-modern"] .ci-plan-label { color: #0f172a; }
+:root[data-theme="light-modern"] .ci-card-plan { background: #f8fafc; border-color: #e2e8f0; }

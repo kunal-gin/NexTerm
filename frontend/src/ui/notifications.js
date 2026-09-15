@@ -93,9 +93,12 @@ function updateNotifBadge() {
   const n = unreadCount();
   if (n > 0) {
     badge.textContent = n > 99 ? "99+" : String(n);
-    badge.style.display = "flex";
+    badge.style.setProperty("display", "flex", "important");
+    badge.classList.remove("hidden");
   } else {
-    badge.style.display = "none";
+    badge.textContent = "0";
+    badge.style.setProperty("display", "none", "important");
+    badge.classList.add("hidden");
   }
 }
 
@@ -168,12 +171,12 @@ export function toggleNotificationPanel() {
   }
   notifPanelOpen = true;
   panel.classList.add("open");
-  renderNotifPanel();
   // Opening the panel marks everything as read.
   loadNotifications();
   notifications.forEach(n => n.read = true);
   persistNotifications();
   updateNotifBadge();
+  renderNotifPanel();
   // Close on outside click.
   notifOutsideHandler = (e) => {
     if (!panel.contains(e.target) && !e.target.closest("#tbNotifBtn")) {

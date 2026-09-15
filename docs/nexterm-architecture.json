@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Nexterm Runtime Architecture",
+    "output": "nexterm-architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "remote-ssh-flow",
+        "label": "Remote SSH & SFTP Flow",
+        "focus": ["ui", "wails_bridge", "app_facade", "conn_mgr", "ssh_engine", "remote_hosts"],
+        "note": "Follow an SSH or SFTP connection request from the Webview terminal to the remote host."
+      },
+      {
+        "id": "local-terminal-flow",
+        "label": "Local Terminal Flow",
+        "focus": ["ui", "wails_bridge", "app_facade", "pty_service", "local_shell"],
+        "note": "Trace how Nexterm launches and streams local Windows ConPTY terminal sessions."
+      },
+      {
+        "id": "vault-and-security",
+        "label": "Security & Credential Vault",
+        "focus": ["vault_service", "app_facade", "conn_mgr", "session_store"],
+        "note": "View how DPAPI encrypted vault and session store supply credentials for remote auth."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "Webview UI",
+      "sublabel": "xterm.js · SFTP UI · Tabs",
+      "tag": "HTML5 / ES6",
+      "pos": [40, 270],
+      "size": [140, 64]
+    },
+    {
+      "id": "wails_bridge",
+      "type": "backend",
+      "label": "Wails IPC Bridge",
+      "sublabel": "RPC Bindings & Event Bus",
+      "tag": "Bidirectional",
+      "pos": [280, 270],
+      "size": [140, 64]
+    },
+    {
+      "id": "vault_service",
+      "type": "security",
+      "label": "Credential Vault",
+      "sublabel": "Windows DPAPI & Keyring",
+      "tag": "Encrypted",
+      "pos": [520, 110],
+      "size": [140, 64]
+    },
+    {
+      "id": "app_facade",
+      "type": "backend",
+      "label": "App Facade",
+      "sublabel": "Central Service Dispatcher",
+      "brand": "go",
+      "pos": [520, 270],
+      "size": [140, 64]
+    },
+    {
+      "id": "session_store",
+      "type": "database",
+      "label": "Session Store",
+      "sublabel": "Session Tree & Configs",
+      "pos": [520, 430],
+      "size": [140, 64]
+    },
+    {
+      "id": "conn_mgr",
+      "type": "backend",
+      "label": "Connection Manager",
+      "sublabel": "Protocol Session Router",
+      "pos": [760, 150],
+      "size": [150, 64]
+    },
+    {
+      "id": "ssh_engine",
+      "type": "backend",
+      "label": "SSH & SFTP Service",
+      "sublabel": "Crypto SSH & SFTP Client",
+      "pos": [760, 270],
+      "size": [150, 64]
+    },
+    {
+      "id": "pty_service",
+      "type": "backend",
+      "label": "Terminal Service",
+      "sublabel": "Windows ConPTY Manager",
+      "pos": [760, 430],
+      "size": [150, 64]
+    },
+    {
+      "id": "remote_hosts",
+      "type": "external",
+      "label": "Remote Servers",
+      "sublabel": "SSH :22 · Telnet · RDP",
+      "pos": [1000, 210],
+      "size": [140, 64]
+    },
+    {
+      "id": "local_shell",
+      "type": "external",
+      "label": "Local OS Shell",
+      "sublabel": "PowerShell · CMD · WSL",
+      "pos": [1000, 430],
+      "size": [140, 64]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Nexterm Desktop App (Wails Host)",
+      "wraps": ["ui", "wails_bridge", "app_facade", "vault_service", "session_store", "conn_mgr", "ssh_engine", "pty_service"]
+    },
+    {
+      "kind": "security-group",
+      "label": "Go Internal Services",
+      "wraps": ["app_facade", "vault_service", "session_store", "conn_mgr", "ssh_engine", "pty_service"]
+    }
+  ],
+  "connections": [
+    {
+      "id": "ui-to-wails",
+      "from": "ui",
+      "to": "wails_bridge",
+      "label": "IPC RPC",
+      "variant": "emphasis"
+    },
+    {
+      "id": "wails-to-facade",
+      "from": "wails_bridge",
+      "to": "app_facade"
+    },
+    {
+      "id": "facade-to-vault",
+      "from": "app_facade",
+      "to": "vault_service",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "facade-to-store",
+      "from": "app_facade",
+      "to": "session_store",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "vault-to-conn",
+      "from": "vault_service",
+      "to": "conn_mgr",
+      "label": "Credentials",
+      "variant": "security"
+    },
+    {
+      "id": "facade-to-conn",
+      "from": "app_facade",
+      "to": "conn_mgr",
+      "label": "Route Session",
+      "variant": "emphasis"
+    },
+    {
+      "id": "conn-to-ssh",
+      "from": "conn_mgr",
+      "to": "ssh_engine",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "facade-to-pty",
+      "from": "app_facade",
+      "to": "pty_service",
+      "label": "Spawn Terminal"
+    },
+    {
+      "id": "ssh-to-remote",
+      "from": "ssh_engine",
+      "to": "remote_hosts",
+      "label": "TCP :22 / SFTP",
+      "variant": "emphasis"
+    },
+    {
+      "id": "pty-to-shell",
+      "from": "pty_service",
+      "to": "local_shell",
+      "label": "ConPTY Stream"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Presentation Layer",
+      "items": [
+        "Chromium Webview frontend rendering modern tabbed UI",
+        "xterm.js instances handle high-performance ANSI terminal output",
+        "Bidirectional Wails IPC bridge streams stdin/stdout and events"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Go Service Engine",
+      "items": [
+        "App Facade coordinates lifecycle and dispatches to domain services",
+        "ConnectionManager routes SSH, Telnet, Serial, RDP, and VNC",
+        "SFTPService manages remote file trees and background streaming"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Security & Storage",
+      "items": [
+        "Windows DPAPI encrypts master passwords, keys, and credentials",
+        "ConPTY integrates directly with Windows pseudo-console API",
+        "Strict host key verification validates known hosts fingerprint"
+      ]
+    }
+  ]
+}

@@ -78,6 +78,43 @@ export async function refreshSFTP(targetPath = "") {
       if (renderConnectedServersCallback) {
         renderConnectedServersCallback();
       }
+    } else {
+      // Browser Preview / Mockup fallback (matching MobaXterm screenshot)
+      const user = (activeTab.profile && activeTab.profile.username) || "pin";
+      const resolvedPath = (path === "~" || !path || path === "/") ? `/home/${user}` : path;
+      currentSFTPPath = resolvedPath;
+      if (activeTab) activeTab.sftpPath = currentSFTPPath;
+      if (pathInput) pathInput.value = currentSFTPPath;
+
+      sftpCurrentItems = [
+        { name: "Videos", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Videos` },
+        { name: "Templates", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Templates` },
+        { name: "Public", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Public` },
+        { name: "Portal", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Portal` },
+        { name: "Pictures", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Pictures` },
+        { name: "Music", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Music` },
+        { name: "Downloads", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Downloads` },
+        { name: "Documents", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Documents` },
+        { name: "Desktop", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Desktop` },
+        { name: ".vim", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.vim` },
+        { name: ".ssh", isDir: true, size: 4096, permissions: "drwx------", modTime: "2026-09-15 12:30", path: `${currentSFTPPath}/.ssh` },
+        { name: ".pki", isDir: true, size: 4096, permissions: "drwx------", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.pki` },
+        { name: ".mozilla", isDir: true, size: 4096, permissions: "drwx------", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.mozilla` },
+        { name: ".local", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.local` },
+        { name: ".java", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.java` },
+        { name: ".dbus", isDir: true, size: 4096, permissions: "drwx------", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.dbus` },
+        { name: ".config", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.config` },
+        { name: ".cache", isDir: true, size: 4096, permissions: "drwx------", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.cache` },
+        { name: "Infranet.properties", isDir: false, size: 1024, permissions: "-rw-r--r--", modTime: "2026-09-15 14:00", path: `${currentSFTPPath}/Infranet.properties` },
+        { name: "default.pinlog", isDir: false, size: 1024, permissions: "-rw-r--r--", modTime: "2026-09-15 14:05", path: `${currentSFTPPath}/default.pinlog` },
+        { name: "dead.letter", isDir: false, size: 1024, permissions: "-rw-r--r--", modTime: "2026-09-15 14:10", path: `${currentSFTPPath}/dead.letter` },
+        { name: ".Xauthority", isDir: false, size: 1024, permissions: "-rw-------", modTime: "2026-09-15 14:12", path: `${currentSFTPPath}/.Xauthority` },
+        { name: ".wget-hsts", isDir: false, size: 1024, permissions: "-rw-------", modTime: "2026-09-15 14:15", path: `${currentSFTPPath}/.wget-hsts` }
+      ];
+      renderSFTPItems(sftpCurrentItems, currentSFTPPath);
+      if (renderConnectedServersCallback) {
+        renderConnectedServersCallback();
+      }
     }
   } catch (err) {
     fileListEl.innerHTML = `<div class="sftp-empty-hint" style="color: var(--accent-red); padding: 16px 12px; line-height: 1.5;">
