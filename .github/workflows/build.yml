@@ -63,10 +63,18 @@ jobs:
       - name: Build macOS App Bundle
         run: wails build -platform darwin/arm64 -clean
 
+      - name: Ad-Hoc Code Sign (Bypass Gatekeeper)
+        run: |
+          # Remove quarantine attribute so macOS doesn't block the app on first launch
+          xattr -cr build/bin/nexterm.app
+          # Ad-hoc sign the app bundle — satisfies Gatekeeper on macOS 10.15+
+          codesign --force --deep --sign - build/bin/nexterm.app
+
       - name: Package macOS App as Zip
         run: |
           cd build/bin
-          zip -r Nexterm-v1.0.0-macos-arm64.zip *.app
+          # Use ditto to preserve code signature inside the zip
+          ditto -c -k --sequesterRsrc --keepParent nexterm.app Nexterm-v1.0.0-macos-arm64.zip
           cd ../..
 
       - name: Upload macOS Artifact

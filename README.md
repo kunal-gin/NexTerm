@@ -228,6 +228,29 @@ Double-click `run.bat` or execute in PowerShell:
 run.bat
 ```
 
+### 🍎 macOS — First Launch (Gatekeeper Bypass)
+
+Because NexTerm is not yet distributed through the Mac App Store, macOS Gatekeeper may show:
+> *"NexTerm" cannot be opened because Apple cannot check it for malicious software.*
+
+**Option 1 — Right-Click to Open (Easiest)**
+1. Right-click (or Control-click) `Nexterm.app` in Finder
+2. Select **Open** from the context menu
+3. Click **Open** in the confirmation dialog
+4. macOS remembers your choice — future launches work normally
+
+**Option 2 — Remove Quarantine via Terminal**
+```bash
+xattr -rd com.apple.quarantine /Applications/Nexterm.app
+# Then launch normally by double-clicking
+```
+
+**Option 3 — System Settings**
+1. Try to open the app (it will be blocked)
+2. Go to **System Settings → Privacy & Security**
+3. Scroll down to find the *"Nexterm was blocked"* message
+4. Click **Open Anyway** → **Open**
+
 ### Build from Source
 Compile optimized release binaries for your operating system:
 
