@@ -768,7 +768,11 @@ export function createTab(tabId, profile, isLocal = false, initialState = "Conne
     closeTab(tabId);
   });
 
-  if (tabbarEl) tabbarEl.appendChild(tabEl);
+  if (tabbarEl) {
+    const inlineAdd = document.getElementById("tabInlineAddBtn");
+    if (inlineAdd && inlineAdd.parentNode === tabbarEl) tabbarEl.insertBefore(tabEl, inlineAdd);
+    else tabbarEl.appendChild(tabEl);
+  }
 
   const paneEl = document.createElement("div");
   paneEl.className = "terminal-pane active";

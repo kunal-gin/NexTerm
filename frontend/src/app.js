@@ -63,6 +63,7 @@ import { showPortExplorer } from './terminal/portExplorer.js';
 import { showLogExplorer } from './terminal/logExplorer.js';
 import { showCommandIntel } from './terminal/commandIntel.js';
 import { showShortcutsOverlay } from './ui/shortcutsHelp.js';
+import { showDocumentation } from './ui/docs.js';
 import { toggleSessionLogging, isAutoLogEnabled, setAutoLog } from './terminal/terminalManager.js';
 import { showNewSessionDialog, showFolderDialog } from './sessions/sessionDialog.js';
 import { showMultiServerConnectDialog } from './sessions/multiServerConnect.js';
@@ -492,28 +493,10 @@ export function setupEventListeners() {
   initNotificationCenter();
 
   // Toolbar buttons
-  safeClick("tbSessionBtn", () => showNewSessionDialog());
-  safeClick("tbServersBtn", async () => {
-    switchSidebarView("sessions");
-    if (window.go && window.go.main && window.go.main.App && window.go.main.App.ExpandAllFolders) {
-      try { await window.go.main.App.ExpandAllFolders(true); } catch (_) {}
-    }
-    await refreshTree();
-  });
-  safeClick("tbToolsBtn", () => switchSidebarView("tools"));
-  safeClick("tbSplitBtn", (e) => showSplitMenu(e.clientX, e.clientY + 10));
-  safeClick("tbMultiExecBtn", showMultiExecutionModal);
-  safeClick("tbBroadcastBtn", () => openBroadcastDialog("all"));
   safeClick("connectedBroadcastBtn", () => openBroadcastDialog("all"));
-  safeClick("tbMacrosBtn", () => switchSidebarView("macros"));
-  safeClick("tbTunnelingBtn", showTunnelingDialog);
-  safeClick("tbPackagesBtn", showPkgMgrDialog);
-  safeClick("tbThemeBtn", showThemePickerDialog);
   safeClick("tbThemeToggleBtn", toggleLightDarkTheme);
   safeClick("tbNotifBtn", toggleNotificationPanel);
   safeClick("tbSettingsBtn", showSettingsDialog);
-  safeClick("tbCommandPaletteBtn", openCommandPalette);
-  safeClick("tbMonitorBtn", () => openServerMonitor());
   safeClick("tbXServerBtn", async () => {
     if (!(window.go && window.go.main && window.go.main.App && window.go.main.App.LaunchXServer)) {
       showToast("X Server support requires rebuilding the app (run.bat)", "error");
@@ -526,7 +509,6 @@ export function setupEventListeners() {
       showToast("X Server: " + err, "warning");
     }
   });
-  safeClick("tbExitBtn", () => { if (confirm("Exit Nexterm?")) window.close(); });
 
   // ---- Mockup top bar: brand, global search, window controls ----
   safeClick("topBrandHome", () => { setNavRailActive("navRailHomeBtn"); activateHomeTab(); });
@@ -536,26 +518,9 @@ export function setupEventListeners() {
     topSearch.addEventListener("keydown", (e) => { if (e.key === "Enter") openCommandPalette(); });
   }
   const rt = () => (window.runtime || (window.wails && window.wails.runtime) || null);
-  safeClick("winMinBtn", () => { const r = rt(); if (r && r.WindowMinimise) r.WindowMinimise(); });
-  safeClick("winMaxBtn", () => { const r = rt(); if (r && r.WindowToggleMaximise) r.WindowToggleMaximise(); });
-  safeClick("winCloseBtn", () => {
-    const r = rt();
-    if (r && r.Quit) { r.Quit(); } else { window.close(); }
-  });
 
   // ---- Mockup home: hero + embedded terminal + workspaces ----
-  safeClick("homeViewDocsBtn", () => {
-    const r = rt();
-    const url = "https://github.com/gnmyt/Nexterm";
-    if (r && r.BrowserOpenURL) { try { r.BrowserOpenURL(url); return; } catch (_) {} }
-    showToast("Documentation is available in the project README", "info");
-  });
-  safeClick("homeTermNewBtn", () => showNewSessionDialog());
-  safeClick("homeTermExpandBtn", () => {
-    const ids = Object.keys(tabs).filter(id => id !== "home" && id !== "welcome");
-    if (ids.length > 0) { try { activateTab(ids[0]); return; } catch (_) {} }
-    startLocalTerminal("powershell");
-  });
+  safeClick("homeViewDocsBtn", () => showDocumentation());
   // Workspace color items -> filter saved sessions by environment name
   document.querySelectorAll(".nav-ws-item").forEach(btn => {
     btn.onclick = () => {
@@ -600,6 +565,21 @@ export function setupEventListeners() {
   safeClick("navRailMultiExec", showMultiExecutionModal);
   safeClick("navRailPackages", showPkgMgrDialog);
   safeClick("navRailThemes", showThemePickerDialog);
+
+  // ---- Quick-access icon toolbar (MobaXterm-style row under the menu) ----
+  // Each button reuses an existing action so behaviour stays identical to the
+  // menu / nav-rail. New SSH proxies the menu option so its dialog logic is shared.
+  safeClick("tbmSession", () => document.getElementById("mNewSSH")?.click());
+  safeClick("tbmLocal", () => startLocalTerminal("powershell"));
+  safeClick("tbmServers", () => activateHomeTab());
+  safeClick("tbmSplit", (e) => showSplitMenu(e.clientX, e.clientY + 10));
+  safeClick("tbmMultiExec", showMultiExecutionModal);
+  safeClick("tbmBroadcast", () => openBroadcastDialog("all"));
+  safeClick("tbmMonitor", () => openServerMonitor());
+  safeClick("tbmTunneling", () => showTunnelingDialog());
+  safeClick("tbmPackages", showPkgMgrDialog);
+  safeClick("tbmSettings", () => showSettingsDialog());
+  safeClick("tbmHelp", () => showDocumentation());
 
   // ---- System Overview live counts ----
   function updateSystemOverview() {
@@ -1137,30 +1117,19 @@ export function setupEventListeners() {
   safeClick("startLocalTerminalBtn", () => startLocalTerminal("powershell"));
   safeClick("newSSHSessionBigBtn", () => showNewSessionDialog());
   safeClick("homeMultiConnectBtn", () => showMultiServerConnectDialog());
-  safeClick("homeBroadcastConnectBtn", () => showMultiServerConnectDialog());
   safeClick("homeAddServerBtn", () => showNewSessionDialog());
   safeClick("homeToolSSH", () => showNewSessionDialog());
   safeClick("homeToolSFTP", () => {
     switchSidebarView("sftp");
     showToast("Switched to SFTP Browser in sidebar", "info");
   });
-  safeClick("homeToolTunnel", showTunnelingDialog);
-  safeClick("homeToolMacros", () => {
-    switchSidebarView("macros");
-    showToast("Switched to Macros in sidebar", "info");
-  });
-  safeClick("homeToolTaskMgr", () => {
-    if (window.go && window.go.main && window.go.main.App) {
-      window.go.main.App.LaunchSystemTool("taskmgr");
-    }
-  });
-  safeClick("homeToolScanner", showPortScannerDialog);
 
   const homeTabBtnEl = document.getElementById("homeTabBtn");
   if (homeTabBtnEl) homeTabBtnEl.onclick = activateHomeTab;
   safeClick("newTabAddBtn", () => {
     showNewSessionDialog();
   });
+  safeClick("tabInlineAddBtn", () => activateHomeTab());
   safeClick("wsSettingsBtn", showSettingsDialog);
 
   // System Tool Handlers

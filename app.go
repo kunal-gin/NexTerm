@@ -97,7 +97,9 @@ func NewApp() *App {
 	// Clean up workspace tabs and watchers on disconnect
 	a.connectionManager.SetOnSessionClosed(func(tabID string) {
 		_, _ = a.settingsService.RemoveTab(tabID)
-		a.sftpService.CloseWatchersForTab(tabID)
+		// Drop the cached SFTP client too, not just the watchers, so a reconnect
+		// on this tab rebuilds SFTP over the new connection.
+		a.sftpService.CloseTab(tabID)
 	})
 
 	a.terminalService.SetOnTerminalClosed(func(tabID string, title string) {
@@ -756,7 +758,7 @@ func (a *App) CloseTab(tabID string) error {
 	_ = a.terminalService.Close(tabID)
 	_ = a.connectionManager.CloseSession(tabID)
 	_, _ = a.settingsService.RemoveTab(tabID)
-	a.sftpService.CloseWatchersForTab(tabID)
+	a.sftpService.CloseTab(tabID)
 	return nil
 }
 

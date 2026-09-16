@@ -339,6 +339,17 @@ func (s *SFTPService) CommitExternalChange(tabID, remotePath, localPath string) 
 	return s.sftpMgr.Upload(tabID, client, localPath, remotePath)
 }
 
+// CloseTab tears down the cached SFTP client and any file watchers for a tab.
+// Call this whenever a session ends (disconnect or tab close) so a later
+// reconnect on the same tab builds a fresh SFTP session over the new SSH
+// connection instead of reusing a dead one.
+func (s *SFTPService) CloseTab(tabID string) {
+	if s.sftpMgr != nil {
+		s.sftpMgr.CloseTab(tabID)
+	}
+	s.CloseWatchersForTab(tabID)
+}
+
 // CloseWatchersForTab terminates file watchers associated with a disconnected tab.
 func (s *SFTPService) CloseWatchersForTab(tabID string) {
 	s.watcherMu.Lock()
