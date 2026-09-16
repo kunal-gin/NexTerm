@@ -1,4 +1,4 @@
-name: Build Nexterm Multi-Platform
+name: Build & Release Nexterm Multi-Platform
 
 on:
   push:
@@ -28,14 +28,21 @@ jobs:
       - name: Run Tests
         run: go test -v ./...
 
-      - name: Build Windows Binary
-        run: wails build -platform windows/amd64 -clean
+      - name: Build Windows Binary & Installer
+        run: wails build -platform windows/amd64 -nsis -clean
 
-      - name: Upload Windows Artifact
+      - name: Package Portable Windows Zip
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "build/bin/nexterm.exe" -DestinationPath "build/bin/Nexterm-v1.0.0-windows-amd64-portable.zip" -Force
+
+      - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Nexterm-windows-amd64
-          path: build/bin/*.exe
+          path: |
+            build/bin/*.exe
+            build/bin/*.zip
 
   build-macos-arm64:
     name: macOS Apple Silicon (arm64)
@@ -56,11 +63,17 @@ jobs:
       - name: Build macOS App Bundle
         run: wails build -platform darwin/arm64 -clean
 
+      - name: Package macOS App as Zip
+        run: |
+          cd build/bin
+          zip -r Nexterm-v1.0.0-macos-arm64.zip *.app
+          cd ../..
+
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Nexterm-macos-arm64
-          path: build/bin/*.app
+          path: build/bin/*.zip
 
   build-linux-amd64:
     name: Linux x86_64
@@ -86,8 +99,48 @@ jobs:
       - name: Build Linux Binary
         run: wails build -platform linux/amd64 -clean
 
+      - name: Package Linux Binary as tar.gz
+        run: |
+          tar -czvf build/bin/Nexterm-v1.0.0-linux-amd64.tar.gz -C build/bin nexterm
+
       - name: Upload Linux Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Nexterm-linux-amd64
-          path: build/bin/nexterm
+          path: build/bin/*.tar.gz
+
+  release:
+    name: Publish GitHub Release
+    needs: [build-windows, build-macos-arm64, build-linux-amd64]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Nexterm-windows-amd64
+          path: release/
+
+      - name: Download macOS Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Nexterm-macos-arm64
+          path: release/
+
+      - name: Download Linux Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Nexterm-linux-amd64
+          path: release/
+
+      - name: List Release Files
+        run: ls -lh release/
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
+          name: NexTerm ${{ github.ref_name }} — Desktop SSH & Systems Workspace
