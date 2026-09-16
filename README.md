@@ -27,22 +27,26 @@
 ## 🌟 Key Features
 
 ```text
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ Terminal  Sessions  View  Tools  Tunneling  Split  Macros  Settings  Help              │
-├────────────────────────────────────────────────────────────────────────────────────────┤
-│ [Session] [Servers] [Tools] [Split ⮟] [MultiExec] [Tunneling] [Macros] [Settings] [Exit]│
-├──────────────────────┬─────────────────────────────────────────────────────────────────┤
-│ Quick connect...     │ [🏠] [Tab 1: prod-app-01] [Tab 2: db-cluster] [+]           [⚙] │
-├────┬─────────────────┼────────────────────────────────┬────────────────────────────────┤
-│ 📁 │ SFTP BROWSER    │ $ cd /opt/brm                  │ $ systemctl status oracle      │
-│ ★  │ /opt/brm        │ $ ./pin_ctl status             │ ● oracle-rdbms.service         │
-│ ⚡ │ ├─ bin          │ [ OK ] CM daemon active        │   Active: active (running)     │
-│ ⇄  │ ├─ sys          ├────────────────────────────────┼────────────────────────────────┤
-│ 📜 │ ├─ conf         │ $ df -h                        │ $ tail -f /var/log/syslog      │
-│ 🛠  │ └─ pin.conf     │ /dev/sda1   500G  120G   380G   │ Mar 08 14:30:00 kernel: OK     │
-├────┴─────────────────┴────────────────────────────────┴────────────────────────────────┤
-│ 🟢 CONNECTED (4) • MultiExec Broadcast [Active] • Nexterm Tunnel: 2 Active • DPAPI Vault│
-└────────────────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Nexterm - SSH & Terminal Manager                                                           —  □  ✕   │
+├──────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Terminal   Sessions   View   Tools   Tunneling   Settings   Macros   Help                            │
+├──────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ [Session ⌵] [Local ⌵] [Servers ⌵] [Split] [MultiExec] [Broadcast] [Monitor] [Tunneling] [Packages]...│
+├──────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ ☰  NexTerm  CONNECT BEYOND LIMITS  │ 🔍 Search servers, sessions... [Ctrl+K] │ 🖥️  🌙  🔔(10)  ⚙️    │
+├────────────────────────────────────┼─────────────────────────────────────────────────────────────────┤
+│ Quick connect...                   │ [🏠] [🟢 (1) AVI-IT-SRV-BRM-01 TEST] [🔵 (2) PowerShell] [+] ⚙ │
+├────────────────────────────────────┼─────────────────────────────────────────────────────────────────┤
+│ 📁 SFTP BROWSER (/home/pin)        │ • Connecting to pin@192.168.1.7:22...                           │
+│ ├─ 📁 .cache                       │ • Authenticating user 'pin'...                                  │
+│ ├─ 📁 .config                      │ • Connected to 192.168.1.7                                      │
+│ ├─ 📁 .local                       │                                                                 │
+│ ├─ 📁 .ssh                         │ [pin@AVI-IT-SRV-BRM-01 ~]$ █                                    │
+│ └─ 📁 Documents                    │                                                                 │
+├────────────────────────────────────┴─────────────────────────────────────────────────────────────────┤
+│ 🟢 pin (192.168.1.7) • [1] AVI-IT-SRV-BRM-01 • SSH • CPU 2.4% • RAM 11.6/30.9 GB • 2 active tabs    │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 📁 1. Graphical SFTP Browser & Embedded Editor (Nexterm Editor)
@@ -127,6 +131,11 @@
 - **Resizable Sidebar**: Drag the custom splitter bar to adjust the navigation and session panel width, with persistent state saved across sessions.
 - **Intelligent Header Layering**: Eliminates redundant global tab bars when multiple split panes are open, providing a clean, single-layer header per pane.
 - **Collapsible SFTP Dual Manager**: Easily toggle or drag the SFTP panel to expand terminal real estate when focusing on command execution.
+
+### ⚡ 15. Modern Quick-Access Action Toolbar & Theme Engine
+- **One-Click Actions**: Instant access to `Session ⌵`, `Local ⌵`, `Servers ⌵`, `Split`, `MultiExec`, `Broadcast`, `Monitor`, `Tunneling`, `Packages`, `Settings`, and `Help` with custom vibrant neon vector line-art.
+- **Interactive State Feedback**: Active state indicators with neon purple glow (`border: 1px solid rgba(168, 85, 247, 0.6)`), live tab counts, and smooth dropdown animations.
+- **Adaptive Theme Switcher**: 1-click toggle between sleek dark glassmorphism (Dark Modern) and bright readable desktop styling (Light Modern).
 
 ---
 
