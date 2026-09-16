@@ -9,8 +9,12 @@
 [![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white)](https://apple.com/macos)
 [![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://kernel.org)
 [![License](https://img.shields.io/badge/License-MIT-green.badge?style=for-the-badge)](#license)
+[![GitHub Release](https://img.shields.io/github/v/release/kunal-gin/NexTerm?style=for-the-badge&color=8b5cf6&logo=github)](https://github.com/kunal-gin/NexTerm/releases/latest)
+[![Windows 1-Click](https://img.shields.io/badge/Download-Windows_x64-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/kunal-gin/NexTerm/releases/download/v1.0.0/NexTerm-Windows-amd64.exe)
 
 **NexTerm** is an all-in-one, cross-platform desktop SSH client, terminal emulator, SFTP browser, and remote infrastructure workstation built with **Go**, **Wails v2**, and **xterm.js**. Engineered for native execution on **Windows**, **macOS** (Apple Silicon & Intel), and **Linux**, it features zero artificial limits, enterprise-grade security controls, visual SSH tunnel management, bastion jump hosts, live server performance monitoring, multi-execution command broadcasting, macro automation, and multi-protocol connectivity.
+
+**[👉 Click here to Download the Latest Release (Zero Setup Required)](https://github.com/kunal-gin/NexTerm/releases/latest)**
 
 </div>
 
