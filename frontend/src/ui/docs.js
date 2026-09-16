@@ -6,7 +6,7 @@
 
 import { showToast } from "./notifications.js";
 
-const REPO_URL = "https://github.com/kunal-gin/NexTerm";
+const REPO_URL = "https://github.com/kunal-live/NexTerm";
 
 function openExternal(url) {
   const rt = window.runtime || (window.wails && window.wails.runtime) || null;
