@@ -3175,7 +3175,11 @@ html {
 }
 
 .nx-panel {
-  height: 480px !important;
+  height: 520px !important;
+  max-height: 520px !important;
+  min-height: 440px !important;
+  display: flex !important;
+  flex-direction: column !important;
   overflow: hidden !important;
 }
 
@@ -4516,37 +4520,288 @@ html {
   color: #38bdf8 !important;
 }
 
+/* ==========================================================================
+   Saved Sessions Panel & Scrollable Grid (#recentSessionsSection & #recentSessionsGrid)
+   ========================================================================== */
+#recentSessionsSection {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 520px !important;
+  max-height: 520px !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+#recentSessionsGrid,
 .nx-saved-list {
-  flex: 1 1 0 !important;
+  flex: 1 1 0% !important;
   min-height: 0 !important;
+  height: 0 !important;
+  max-height: calc(520px - 110px) !important;
   overflow-y: auto !important;
-  padding: 6px 12px 14px !important;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain !important;
+  padding: 8px 14px 16px !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(56, 189, 248, 0.45) rgba(15, 23, 42, 0.5) !important;
 }
 
+#recentSessionsGrid::-webkit-scrollbar,
 .nx-saved-list::-webkit-scrollbar {
-  width: 8px;
+  width: 7px !important;
 }
 
+#recentSessionsGrid::-webkit-scrollbar-track,
+.nx-saved-list::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border-radius: 8px !important;
+  margin: 4px 0 !important;
+}
+
+#recentSessionsGrid::-webkit-scrollbar-thumb,
 .nx-saved-list::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.35);
-  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.4) !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(56, 189, 248, 0.2) !important;
+  transition: background 0.15s ease !important;
 }
 
-.nx-saved-list .recent-session-card {
+#recentSessionsGrid::-webkit-scrollbar-thumb:hover,
+.nx-saved-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 189, 248, 0.75) !important;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5) !important;
+}
+
+/* Environment groups inside Saved Sessions */
+#recentSessionsGrid .home-env-group {
+  margin-bottom: 16px !important;
+}
+
+#recentSessionsGrid .home-env-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 7px 12px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-radius: 8px !important;
+  margin-bottom: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+#recentSessionsGrid .home-env-badge {
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+  padding: 3px 8px !important;
+  border-radius: 5px !important;
+  letter-spacing: 0.6px !important;
+  text-transform: uppercase !important;
+}
+
+#recentSessionsGrid .home-env-name {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #f1f5f9 !important;
+  letter-spacing: 0.5px !important;
+}
+
+#recentSessionsGrid .home-env-count {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #94a3b8 !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  padding: 1px 6px !important;
+  border-radius: 10px !important;
+}
+
+#recentSessionsGrid .home-env-cards-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)) !important;
+  gap: 10px !important;
+}
+
+#recentSessionsGrid .home-env-empty {
+  padding: 8px 14px !important;
+  font-size: 11.5px !important;
+  color: #64748b !important;
+  background: rgba(255, 255, 255, 0.015) !important;
+  border-radius: 8px !important;
+  border: 1px dashed rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Card aesthetics & readability */
+#recentSessionsGrid .recent-session-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%), rgba(18, 23, 36, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
   border-radius: 12px !important;
-  transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease !important;
+  padding: 12px 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.16s ease !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
 }
 
-.nx-saved-list .recent-session-card:hover {
-  transform: translateY(-1px) !important;
+#recentSessionsGrid .recent-session-card:hover {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(24, 31, 48, 0.95) !important;
   border-color: rgba(56, 189, 248, 0.45) !important;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(56, 189, 248, 0.15) !important;
 }
 
+#recentSessionsGrid .card-header-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-bottom: 2px !important;
+}
+
+#recentSessionsGrid .card-name {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #f8fafc !important;
+  line-height: 1.3 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#recentSessionsGrid .card-host {
+  font-size: 11.5px !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  color: #94a3b8 !important;
+  line-height: 1.3 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  margin-bottom: 6px !important;
+}
+
+#recentSessionsGrid .card-actions-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-top: auto !important;
+}
+
+#recentSessionsGrid .card-connect-btn {
+  flex: 1 !important;
+  height: 28px !important;
+  border-radius: 7px !important;
+  background: rgba(56, 189, 248, 0.14) !important;
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
+  color: #38bdf8 !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  transition: all 0.15s ease !important;
+}
+
+#recentSessionsGrid .card-connect-btn:hover {
+  background: #0284c7 !important;
+  border-color: #38bdf8 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4) !important;
+}
+
+#recentSessionsGrid .card-color-btn {
+  height: 28px !important;
+  padding: 0 9px !important;
+  border-radius: 7px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  color: #94a3b8 !important;
+  font-size: 11px !important;
+  cursor: pointer !important;
+  transition: all 0.12s ease !important;
+}
+
+#recentSessionsGrid .card-color-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #f1f5f9 !important;
+}
+
+#recentSessionsGrid .card-delete-btn {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 7px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #64748b !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.12s ease !important;
+}
+
+#recentSessionsGrid .card-delete-btn:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+  color: #ef4444 !important;
+}
+
+#recentSessionsGrid .empty-saved-sessions-card,
 .nx-saved-list .empty-saved-sessions-card {
   padding: 26px 16px !important;
+}
+
+/* Light Theme Overrides for Saved Sessions */
+:root[data-theme="light-modern"] #recentSessionsGrid {
+  scrollbar-color: rgba(14, 165, 233, 0.4) rgba(241, 245, 249, 0.8) !important;
+}
+
+:root[data-theme="light-modern"] #recentSessionsGrid::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.8) !important;
+}
+
+:root[data-theme="light-modern"] #recentSessionsGrid::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.35) !important;
+  border-color: rgba(14, 165, 233, 0.2) !important;
+}
+
+:root[data-theme="light-modern"] #recentSessionsGrid .home-env-header {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+:root[data-theme="light-modern"] #recentSessionsGrid .home-env-name {
+  color: #0f172a !important;
+}
+
+:root[data-theme="light-modern"] #recentSessionsGrid .home-env-count {
+  color: #64748b !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+:root[data-theme="light-modern"] #recentSessionsGrid .home-env-empty {
+  color: #94a3b8 !important;
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+:root[data-theme="light-modern"] #recentSessionsGrid .recent-session-card {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+:root[data-theme="light-modern"] #recentSessionsGrid .recent-session-card:hover {
+  background: #f8fafc !important;
+  border-color: #0ea5e9 !important;
+  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.12) !important;
+}
+
+:root[data-theme="light-modern"] #recentSessionsGrid .card-name {
+  color: #0f172a !important;
+}
+
+:root[data-theme="light-modern"] #recentSessionsGrid .card-host {
+  color: #64748b !important;
 }
 
 /* System Overview */

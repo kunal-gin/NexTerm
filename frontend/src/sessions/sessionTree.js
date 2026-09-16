@@ -686,7 +686,12 @@ export function updateRecentSessionsGrid(targetNode = null, filterText = "") {
     }
   });
 
-  if (section) section.style.display = "block";
+  if (section) {
+    section.style.display = "";
+  }
+  if (grid) {
+    grid.style.overflowY = "auto";
+  }
 
   if (allSessions.length === 0 && groups.length === 0) {
     grid.innerHTML = `
