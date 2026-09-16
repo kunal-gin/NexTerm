@@ -81,10 +81,7 @@ import {
   setShowHiddenSFTPFiles,
   toggleSFTPPathDropdown,
   closeSFTPPathDropdown,
-  renderSFTPItems,
-  setSFTPViewMode,
-  setSFTPFilterTerm,
-  sftpFilterTerm
+  renderSFTPItems
 } from './sftp/sftpPanel.js';
 import { openRemoteFileEditor, handleExternalFileModified } from './sftp/fileBrowser.js';
 import { applyDesignTokens } from './design/themeManager.js';
@@ -938,17 +935,6 @@ export function setupEventListeners() {
       setSFTPSortOrder("asc");
     }
     renderSFTPItems(sftpCurrentItems, currentSFTPPath);
-  });
-
-  // SFTP View Mode (List vs Grid) and Quick Search
-  safeClick("sftpViewListBtn", () => setSFTPViewMode("list"));
-  safeClick("sftpViewGridBtn", () => setSFTPViewMode("grid"));
-  safeClick("sftpSearchBtn", () => {
-    const term = prompt("Filter files in current directory:", sftpFilterTerm);
-    if (term !== null) {
-      setSFTPFilterTerm(term);
-      showToast(term ? `Filtering by: "${term}"` : "Filter cleared", "info");
-    }
   });
 
   // Sidebar buttons for macros & tunnels

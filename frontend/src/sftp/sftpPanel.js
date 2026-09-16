@@ -1,9 +1,11 @@
+// ==========================================================================
+// Nexterm - SFTP Panel & Dual Pane File Explorer
+// ==========================================================================
+
 import { tabs, activeTabId } from '../state/tabState.js';
 import { escapeHtml, showToast } from '../ui/notifications.js';
 import {
   getMobaFileIcon,
-  getFolderBadgeIcon,
-  getItemDescription,
   formatMobaSize,
   openRemoteFileEditor,
   showSFTPContextMenu,
@@ -20,26 +22,6 @@ export let sftpSortColumn = "name"; // "name" or "size"
 export let sftpSortOrder = "asc";   // "asc" or "desc"
 export let showHiddenSFTPFiles = true;
 export let recentSFTPPaths = ["/", "~", "/opt", "/etc", "/var/log", "/tmp"];
-export let sftpViewMode = "list";
-export let sftpFilterTerm = "";
-
-export function setSFTPViewMode(mode) {
-  sftpViewMode = mode;
-  const fileListEl = document.getElementById("sftpFileList");
-  const listBtn = document.getElementById("sftpViewListBtn");
-  const gridBtn = document.getElementById("sftpViewGridBtn");
-  if (fileListEl) {
-    if (mode === "grid") fileListEl.classList.add("grid-view");
-    else fileListEl.classList.remove("grid-view");
-  }
-  if (listBtn) listBtn.classList.toggle("active", mode === "list");
-  if (gridBtn) gridBtn.classList.toggle("active", mode === "grid");
-}
-
-export function setSFTPFilterTerm(term) {
-  sftpFilterTerm = (term || "").trim();
-  renderSFTPItems(sftpCurrentItems, currentSFTPPath);
-}
 
 export function setCurrentSFTPPath(p) { currentSFTPPath = p; }
 export function setSFTPCurrentItems(items) { sftpCurrentItems = items; }
@@ -105,25 +87,29 @@ export async function refreshSFTP(targetPath = "") {
       if (pathInput) pathInput.value = currentSFTPPath;
 
       sftpCurrentItems = [
-        { name: ".cache", isDir: true, size: 4096, permissions: "drwx------", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.cache` },
-        { name: ".config", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.config` },
-        { name: ".cpan", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.cpan` },
-        { name: ".java", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.java` },
+        { name: "Videos", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Videos` },
+        { name: "Templates", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Templates` },
+        { name: "Public", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Public` },
+        { name: "Portal", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Portal` },
+        { name: "Pictures", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Pictures` },
+        { name: "Music", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Music` },
+        { name: "Downloads", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Downloads` },
+        { name: "Documents", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Documents` },
+        { name: "Desktop", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 15:10", path: `${currentSFTPPath}/Desktop` },
+        { name: ".vim", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.vim` },
         { name: ".ssh", isDir: true, size: 4096, permissions: "drwx------", modTime: "2026-09-15 12:30", path: `${currentSFTPPath}/.ssh` },
-        { name: "certificate", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/certificate` },
-        { name: "Installables", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/Installables` },
-        { name: "oc-cn-helm-chart", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/oc-cn-helm-chart` },
-        { name: "opt", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/opt` },
-        { name: "Oracle", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/Oracle` },
-        { name: "Portal", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/Portal` },
-        { name: "REPLACE_WITH_DOMAIN_DEV", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/REPLACE_WITH_DOMAIN_DEV` },
-        { name: "repos", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/repos` },
-        { name: ".bash_history", isDir: false, size: 31, permissions: "-rw-------", modTime: "2026-09-15 14:15", path: `${currentSFTPPath}/.bash_history` },
-        { name: ".bash_logout", isDir: false, size: 1, permissions: "-rw-r--r--", modTime: "2026-09-15 14:15", path: `${currentSFTPPath}/.bash_logout` },
-        { name: ".bashrc", isDir: false, size: 3771, permissions: "-rw-r--r--", modTime: "2026-09-15 14:15", path: `${currentSFTPPath}/.bashrc` },
+        { name: ".pki", isDir: true, size: 4096, permissions: "drwx------", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.pki` },
+        { name: ".mozilla", isDir: true, size: 4096, permissions: "drwx------", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.mozilla` },
+        { name: ".local", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.local` },
+        { name: ".java", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.java` },
+        { name: ".dbus", isDir: true, size: 4096, permissions: "drwx------", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.dbus` },
+        { name: ".config", isDir: true, size: 4096, permissions: "drwxr-xr-x", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.config` },
+        { name: ".cache", isDir: true, size: 4096, permissions: "drwx------", modTime: "2026-09-15 12:00", path: `${currentSFTPPath}/.cache` },
         { name: "Infranet.properties", isDir: false, size: 1024, permissions: "-rw-r--r--", modTime: "2026-09-15 14:00", path: `${currentSFTPPath}/Infranet.properties` },
-        { name: "default.pinlog", isDir: false, size: 2048, permissions: "-rw-r--r--", modTime: "2026-09-15 14:05", path: `${currentSFTPPath}/default.pinlog` },
-        { name: ".Xauthority", isDir: false, size: 1024, permissions: "-rw-------", modTime: "2026-09-15 14:12", path: `${currentSFTPPath}/.Xauthority` }
+        { name: "default.pinlog", isDir: false, size: 1024, permissions: "-rw-r--r--", modTime: "2026-09-15 14:05", path: `${currentSFTPPath}/default.pinlog` },
+        { name: "dead.letter", isDir: false, size: 1024, permissions: "-rw-r--r--", modTime: "2026-09-15 14:10", path: `${currentSFTPPath}/dead.letter` },
+        { name: ".Xauthority", isDir: false, size: 1024, permissions: "-rw-------", modTime: "2026-09-15 14:12", path: `${currentSFTPPath}/.Xauthority` },
+        { name: ".wget-hsts", isDir: false, size: 1024, permissions: "-rw-------", modTime: "2026-09-15 14:15", path: `${currentSFTPPath}/.wget-hsts` }
       ];
       renderSFTPItems(sftpCurrentItems, currentSFTPPath);
       if (renderConnectedServersCallback) {
@@ -187,12 +173,6 @@ export function renderSFTPItems(items, path = currentSFTPPath) {
     filteredItems = filteredItems.filter(i => !i.name.startsWith("."));
   }
 
-  // Filter by search term if active
-  if (sftpFilterTerm) {
-    const term = sftpFilterTerm.toLowerCase();
-    filteredItems = filteredItems.filter(i => (i.name || "").toLowerCase().includes(term) || getItemDescription(i).toLowerCase().includes(term));
-  }
-
   // Sort items
   filteredItems.sort((a, b) => {
     if (a.isDir !== b.isDir) {
@@ -222,15 +202,12 @@ export function renderSFTPItems(items, path = currentSFTPPath) {
     parentRow.title = "Go to parent directory (Click or Double-click)";
     parentRow.innerHTML = `
       <div class="moba-row-left">
-        <span class="moba-row-icon">${getFolderBadgeIcon("..", false, null, 30)}</span>
-        <div class="moba-row-content">
-          <span class="moba-row-name" style="font-weight: bold; color: #a7f3d0;">..</span>
-          <span class="moba-row-desc">Parent Directory</span>
-        </div>
+        <span class="moba-row-icon">
+          <svg width="15" height="15" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#86efac"/><path d="M11 11V7a2 2 0 0 0-2-2H5m0 0l2.5-2.5M5 5l2.5 2.5" stroke="#166534" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="moba-row-name" style="font-weight: bold; color: #a7f3d0;">..</span>
       </div>
-      <div class="moba-row-right">
-        <span class="moba-row-dash">—</span>
-      </div>
+      <span class="moba-row-size"></span>
     `;
     parentRow.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -246,7 +223,7 @@ export function renderSFTPItems(items, path = currentSFTPPath) {
   if (filteredItems.length === 0) {
     const emptyEl = document.createElement("div");
     emptyEl.className = "sftp-empty-hint";
-    emptyEl.textContent = sftpFilterTerm ? `No files match "${sftpFilterTerm}"` : "Directory is empty";
+    emptyEl.textContent = "Directory is empty";
     fileListEl.appendChild(emptyEl);
     return;
   }
@@ -258,25 +235,16 @@ export function renderSFTPItems(items, path = currentSFTPPath) {
     row.dataset.path = item.path;
     row.dataset.isDir = item.isDir;
 
-    const iconSvg = getMobaFileIcon(item, 30);
-    const desc = getItemDescription(item);
+    const iconSvg = getMobaFileIcon(item);
     const sizeFormatted = formatMobaSize(item.size, item.isDir);
     const tooltip = `${item.path}\nSize: ${item.formattedSize || (item.size + ' B')}\nPermissions: ${item.permissions || 'N/A'}\nModified: ${item.modTime || 'N/A'}`;
 
     row.innerHTML = `
       <div class="moba-row-left" title="${escapeHtml(tooltip)}">
         <span class="moba-row-icon">${iconSvg}</span>
-        <div class="moba-row-content">
-          <span class="moba-row-name">${escapeHtml(item.name)}</span>
-          <span class="moba-row-desc">${escapeHtml(desc)}</span>
-        </div>
+        <span class="moba-row-name">${escapeHtml(item.name)}</span>
       </div>
-      <div class="moba-row-right">
-        ${item.isDir
-          ? `<span class="moba-row-folder-tag">Folder</span><span class="moba-row-chevron">›</span>`
-          : `<span class="moba-row-size">${escapeHtml(sizeFormatted)}</span>`
-        }
-      </div>
+      <span class="moba-row-size">${escapeHtml(sizeFormatted)}</span>
     `;
 
     // Click on row
