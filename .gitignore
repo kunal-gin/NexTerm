@@ -6,6 +6,9 @@ build/bin/
 *.so
 *.dylib
 bin/
+dist/
+frontend/dist/
+node_modules/
 
 # Logs & diagnostic outputs
 *.log
@@ -35,5 +38,9 @@ Thumbs.db
 *.userossc
 *.sln.docstates
 
-# Local AI scratch
+# Local AI agents and scratch
 Claude outputs/
+.agents/
+
+# Generated architecture docs & visual evidence
+docs/
