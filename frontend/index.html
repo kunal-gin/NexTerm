@@ -466,9 +466,18 @@
               <!-- 2. Combobox Path Bar with Dropdown -->
               <div class="moba-sftp-combobox-wrap">
                 <div class="moba-sftp-combobox">
+                  <span class="sftp-path-folder-badge" title="Current Directory">
+                    <svg width="22" height="20" viewBox="0 0 32 30" fill="none">
+                      <path d="M 3 6 C 3 4.3 4.3 3 6 3 L 13 3 C 14.5 3 15.6 4 16.5 5.5 L 17.5 7 C 18.2 8 19.2 8.5 20.5 8.5 L 26 8.5 C 27.7 8.5 29 9.8 29 11.5 L 29 24 C 29 25.7 27.7 27 26 27 L 6 27 C 4.3 27 3 25.7 3 24 Z" fill="#8b5cf6"/>
+                      <rect x="12" y="14" width="8" height="7" rx="1.5" fill="#ffffff" opacity="0.9"/>
+                    </svg>
+                  </span>
                   <input type="text" id="sftpPathInput" value="/" placeholder="/remote/path..." spellcheck="false" autocomplete="off" />
                   <button type="button" id="sftpPathDropdownBtn" class="moba-sftp-dropdown-arrow" title="Select Path / Recent Paths">
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </button>
+                  <button type="button" id="sftpSearchBtn" class="moba-sftp-search-btn" title="Search / Filter Directory">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                   </button>
                 </div>
                 <!-- Path History Dropdown Menu -->
@@ -487,10 +496,17 @@
               <!-- 3. Table Column Header -->
               <div class="moba-sftp-table-header">
                 <div class="moba-col-name" id="sftpSortNameBtn" title="Sort by Name">
-                  <span class="moba-sort-arrow" id="sftpSortArrow">▲</span> Name
+                  Name <span class="moba-sort-arrow" id="sftpSortArrow">▲</span>
                 </div>
-                <div class="moba-col-divider"></div>
                 <div class="moba-col-size" id="sftpSortSizeBtn" title="Sort by Size">Size</div>
+                <div class="moba-view-toggles">
+                  <button class="moba-view-btn active" id="sftpViewListBtn" title="List View" type="button">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><circle cx="4" cy="6" r="1.5" fill="currentColor"></circle><circle cx="4" cy="12" r="1.5" fill="currentColor"></circle><circle cx="4" cy="18" r="1.5" fill="currentColor"></circle></svg>
+                  </button>
+                  <button class="moba-view-btn" id="sftpViewGridBtn" title="Grid View" type="button">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg>
+                  </button>
+                </div>
               </div>
 
               <!-- 4. SFTP File/Folder List -->

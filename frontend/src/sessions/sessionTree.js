@@ -33,6 +33,7 @@ import {
   currentSFTPPath,
   registerSFTPRenderConnectedServers
 } from '../sftp/sftpPanel.js';
+import { getFolderBadgeIcon } from '../sftp/fileBrowser.js';
 import { renderSidebarMacros, renderSidebarTunnels } from '../ui/modal.js';
 
 // Helper to get tree DOM element
@@ -408,9 +409,12 @@ export function renderNode(node, filter = "", parentNode = null, level = 0) {
       ? `<span class="tree-folder-user" style="font-size: 10px; color: var(--text-dim); margin-left: auto; margin-right: 4px;" title="Default username: ${escapeHtml(node.defaultUsername)}">👤 ${escapeHtml(node.defaultUsername)}</span>`
       : '';
 
+    const envColor = fEnv ? fEnv.color : (node.name.toLowerCase().includes("prod") ? "#ef4444" : node.name.toLowerCase().includes("uat") ? "#f59e0b" : node.name.toLowerCase().includes("test") ? "#10b981" : "#f59e0b");
+    const folderIconSvg = getFolderBadgeIcon(node.name, isExpanded, envColor, 18);
+
     row.innerHTML = `
       <span class="chevron">${isExpanded ? "▾" : "▸"}</span>
-      <span class="node-icon">${isExpanded ? "📂" : "📁"}</span>
+      <span class="node-icon tree-folder-icon" style="display:inline-flex; align-items:center; justify-content:center;">${folderIconSvg}</span>
       <span class="node-name" title="${escapeHtml(node.name)}">${escapeHtml(node.name)}</span>
       ${fBadgeHtml}
       ${userHintHtml}

@@ -16,53 +16,246 @@ export function registerFileBrowserSFTPRefresh(fn) {
   refreshSFTPFn = fn;
 }
 
-export function getMobaFileIcon(item) {
-  if (item.isDir) {
-    return `<svg width="15" height="15" viewBox="0 0 16 16"><path d="M1 3a1 1 0 0 1 1-1h4l2 2h6a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3z" fill="#f59e0b"/></svg>`;
+export function getFolderBadgeIcon(name = "", isExpanded = false, customColor = null, size = 30) {
+  const n = (name || "").toLowerCase().trim();
+  let bg = customColor;
+  let fg = "#0f172a";
+  let glyph = "";
+
+  // 1. Parent directory
+  if (name === "..") {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 32 30" fill="none" class="folder-badge-svg" style="flex-shrink:0;">
+      <rect x="2" y="3" width="28" height="24" rx="7" fill="#4ade80"/>
+      <path d="M19 19v-2a4 4 0 0 0-4-4H9m0 0l3-3m-3 3l3 3" stroke="#064e3b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
   }
-  const ext = (item.extension || "").toLowerCase();
+
+  // 2. Specialized linux directories matching screenshot & common patterns
+  if (n.includes("cache")) {
+    bg = bg || "#c084fc";
+    glyph = `<circle cx="16" cy="18" r="5" fill="none" stroke="${fg}" stroke-width="1.6"/><path d="M16 18l3-3" stroke="${fg}" stroke-width="1.6" stroke-linecap="round"/><circle cx="16" cy="18" r="1.2" fill="${fg}"/>`;
+  } else if (n.includes("config") || n === ".vim") {
+    bg = bg || "#60a5fa";
+    glyph = `<circle cx="16" cy="17.5" r="2.3" fill="none" stroke="${fg}" stroke-width="1.8"/><path d="M16 13v1.5m0 6V22m4.5-4.5h-1.5m-6 0H7m12.7-3.2l-1.1 1.1m-4.2 4.2l-1.1 1.1m6.4 0l-1.1-1.1m-4.2-4.2l-1.1-1.1" stroke="${fg}" stroke-width="1.7" stroke-linecap="round"/>`;
+  } else if (n.includes("cpan") || n.includes("perl")) {
+    bg = bg || "#2dd4bf";
+    glyph = `<path d="M11 20h10M13 14c1-2 2-3 4-2 2 1 2 3 2 4v4m-8-6c-1-1-2 0-2 2v4" stroke="${fg}" stroke-width="1.8" stroke-linecap="round" fill="none"/>`;
+  } else if (n.includes("java") || n.includes("jvm") || n.includes("jdk")) {
+    bg = bg || "#f87171";
+    glyph = `<path d="M12.5 16h6a1 1 0 0 1 1 1v2a3 3 0 0 1-3 3h-2a3 3 0 0 1-3-3v-2a1 1 0 0 1 1-1z" fill="${fg}"/><path d="M19.5 17h1a1.5 1.5 0 0 1 0 3h-1" stroke="${fg}" stroke-width="1.4" fill="none"/><path d="M14.5 13c0 1-.8 1.5-.8 2m3.5-2c0 1-.8 1.5-.8 2" stroke="${fg}" stroke-width="1.3" stroke-linecap="round"/>`;
+  } else if (n.includes("ssh") || n.includes("keys") || n.includes("auth")) {
+    bg = bg || "#fbbf24";
+    glyph = `<circle cx="13.5" cy="18" r="2.5" fill="none" stroke="${fg}" stroke-width="1.8"/><path d="M16 18h5m-2 0v2m2-2v1.5" stroke="${fg}" stroke-width="1.8" stroke-linecap="round"/>`;
+  } else if (n.includes("cert") || n.includes("ssl") || n.includes("pki") || n.includes("tls")) {
+    bg = bg || "#a3e635";
+    glyph = `<path d="M16 13.5l4 1.5v3c0 2.5-2 4.5-4 5.5-2-1-4-3-4-5.5v-3l4-1.5z" fill="none" stroke="${fg}" stroke-width="1.6"/><path d="M14.5 18l1.2 1.2 2.5-2.5" stroke="${fg}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  } else if (n.includes("install") || n.includes("package") || n.includes("dist") || n.includes("build") || n.includes("download")) {
+    bg = bg || "#c084fc";
+    glyph = `<path d="M12 15l4-2 4 2v5l-4 2-4-2v-5z" fill="none" stroke="${fg}" stroke-width="1.5"/><path d="M12 15l4 2 4-2m-4 2v5" stroke="${fg}" stroke-width="1.4"/>`;
+  } else if (n.includes("helm") || n.includes("k8s") || n.includes("kube") || n.includes("chart")) {
+    bg = bg || "#38bdf8";
+    glyph = `<circle cx="16" cy="17.5" r="4.2" fill="none" stroke="${fg}" stroke-width="1.5"/><circle cx="16" cy="17.5" r="1.3" fill="${fg}"/><path d="M16 12v2.5m0 6v2.5m-5.5-5.5h2.5m6 0h2.5" stroke="${fg}" stroke-width="1.4" stroke-linecap="round"/>`;
+  } else if (n === "opt" || n.includes("tool") || n.includes("util")) {
+    bg = bg || "#94a3b8";
+    glyph = `<circle cx="16" cy="17.5" r="2.4" fill="none" stroke="${fg}" stroke-width="1.8"/><path d="M16 13.5v1.8m0 4.4v1.8m4.5-4h-1.8m-5.4 0H7.5" stroke="${fg}" stroke-width="1.8" stroke-linecap="round"/>`;
+  } else if (n.includes("oracle") || n.includes("db") || n.includes("sql") || n.includes("data")) {
+    bg = bg || "#f87171";
+    glyph = `<ellipse cx="16" cy="14.5" rx="4.5" ry="1.7" fill="none" stroke="${fg}" stroke-width="1.5"/><path d="M11.5 14.5v3c0 1 2 1.7 4.5 1.7s4.5-.7 4.5-1.7v-3m-9 3v3c0 1 2 1.7 4.5 1.7s4.5-.7 4.5-1.7v-3" stroke="${fg}" stroke-width="1.5"/>`;
+  } else if (n.includes("portal") || n.includes("web") || n.includes("www") || n.includes("html") || n.includes("site") || n.includes("public")) {
+    bg = bg || "#e879f9";
+    glyph = `<circle cx="16" cy="17.5" r="5" fill="none" stroke="${fg}" stroke-width="1.5"/><ellipse cx="16" cy="17.5" rx="2.5" ry="5" fill="none" stroke="${fg}" stroke-width="1.2"/><line x1="11" y1="17.5" x2="21" y2="17.5" stroke="${fg}" stroke-width="1.2"/>`;
+  } else if (n.includes("domain") || n.includes("replace") || n.includes("star") || n.includes("fav")) {
+    bg = bg || "#fbbf24";
+    glyph = `<path d="M16 13.5l1.2 2.6 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4z" fill="${fg}"/>`;
+  } else if (n.includes("repo") || n.includes("git") || n.includes("src") || n.includes("source") || n.includes("code")) {
+    bg = bg || "#4ade80";
+    glyph = `<path d="M13.5 15.5l-2.2 2 2.2 2m5-4l2.2 2-2.2 2m-3 .5l1.5-5" stroke="${fg}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`;
+  } else if (n.includes("doc") || n.includes("text") || n.includes("note")) {
+    bg = bg || "#38bdf8";
+    glyph = `<path d="M13 14h6m-6 3h6m-6 3h4" stroke="${fg}" stroke-width="1.5" stroke-linecap="round"/>`;
+  } else if (n.includes("music") || n.includes("audio") || n.includes("sound")) {
+    bg = bg || "#a855f7";
+    glyph = `<path d="M14 19a2 2 0 1 0-2-2v-4l6-1.5v4.5a2 2 0 1 0-2-2" stroke="${fg}" stroke-width="1.5" fill="none"/>`;
+  } else if (n.includes("video") || n.includes("movie") || n.includes("film")) {
+    bg = bg || "#f43f5e";
+    glyph = `<rect x="12" y="14" width="8" height="6" rx="1.5" stroke="${fg}" stroke-width="1.5" fill="none"/><path d="M15 15.5l3 1.5-3 1.5z" fill="${fg}"/>`;
+  } else if (n.includes("pic") || n.includes("photo") || n.includes("img") || n.includes("image")) {
+    bg = bg || "#ec4899";
+    glyph = `<rect x="12" y="14" width="8" height="7" rx="1.5" stroke="${fg}" stroke-width="1.5" fill="none"/><circle cx="14.5" cy="16.5" r=".8" fill="${fg}"/><path d="M12 19l2.5-2 2 1.5 2-1.5 1.5 1" stroke="${fg}" stroke-width="1.2" stroke-linecap="round"/>`;
+  } else if (n.includes("prod")) {
+    bg = bg || "#ef4444";
+    glyph = `<circle cx="16" cy="17.5" r="4.5" fill="none" stroke="${fg}" stroke-width="1.6"/><path d="M14 17.5h4m-2-2v4" stroke="${fg}" stroke-width="1.6" stroke-linecap="round"/>`;
+  } else if (n.includes("uat")) {
+    bg = bg || "#f59e0b";
+    glyph = `<path d="M16 13.5l1.2 2.6 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4z" fill="${fg}"/>`;
+  } else if (n.includes("test")) {
+    bg = bg || "#10b981";
+    glyph = `<path d="M13.5 18l2 2 4-4" stroke="${fg}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+  } else {
+    const colors = ["#f59e0b", "#38bdf8", "#a855f7", "#10b981", "#ec4899", "#6366f1", "#14b8a6", "#f97316"];
+    let hash = 0;
+    for (let i = 0; i < n.length; i++) hash = (hash * 31 + n.charCodeAt(i)) & 0xffffffff;
+    bg = bg || colors[Math.abs(hash) % colors.length];
+    glyph = `<path d="M12 17.5h8m-4-3v6" stroke="${fg}" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>`;
+  }
+
+  return `<svg width="${size}" height="${size}" viewBox="0 0 32 30" fill="none" class="folder-badge-svg" style="flex-shrink:0;">
+    <path d="M 3 6 C 3 4.3 4.3 3 6 3 L 13 3 C 14.5 3 15.6 4 16.5 5.5 L 17.5 7 C 18.2 8 19.2 8.5 20.5 8.5 L 26 8.5 C 27.7 8.5 29 9.8 29 11.5 L 29 24 C 29 25.7 27.7 27 26 27 L 6 27 C 4.3 27 3 25.7 3 24 Z" fill="${bg}"/>
+    ${glyph}
+  </svg>`;
+}
+
+export function getFileBadgeIcon(item, size = 30) {
   const name = (item.name || "").toLowerCase();
+  const ext = (item.extension || name.substring(name.lastIndexOf(".")) || "").toLowerCase();
 
-  // C / C++ / Header files
-  if (ext === ".c" || ext === ".cpp" || ext === ".cc" || ext === ".h" || ext === ".hpp") {
-    return `<svg width="15" height="15" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="#1d4ed8"/><path d="M10.5 5.5A3.5 3.5 0 1 0 10.5 10.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" fill="none"/></svg>`;
+  // 1. .bash_history -> Blue document with `>_` terminal prompt
+  if (name.includes("history") || name.endsWith(".history")) {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" class="file-badge-svg" style="flex-shrink:0;">
+      <path d="M7 4a3 3 0 0 1 3-3h9l7 7v19a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V4z" fill="#60a5fa"/>
+      <path d="M19 1v6a1 1 0 0 0 1 1h6" fill="#93c5fd"/>
+      <path d="M12 17l2.5 2.5L12 22m3.5 0h4" stroke="#0f172a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
   }
 
-  // Object / Binary files
-  if (ext === ".o" || ext === ".obj" || ext === ".so" || ext === ".a" || ext === ".dll" || ext === ".bin" || ext === ".exe" || ext === ".class") {
-    return `<svg width="15" height="15" viewBox="0 0 16 16"><rect width="15" height="15" rx="2" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/><text x="7.5" y="6.5" font-size="5" font-family="monospace" font-weight="bold" fill="#312e81" text-anchor="middle">100</text><text x="7.5" y="12" font-size="5" font-family="monospace" font-weight="bold" fill="#312e81" text-anchor="middle">001</text></svg>`;
+  // 2. .bash_logout, .logout, or text docs -> Silver document with clean horizontal lines
+  if (name.includes("logout") || ext === ".txt" || ext === ".doc") {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" class="file-badge-svg" style="flex-shrink:0;">
+      <path d="M7 4a3 3 0 0 1 3-3h9l7 7v19a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V4z" fill="#e2e8f0"/>
+      <path d="M19 1v6a1 1 0 0 0 1 1h6" fill="#cbd5e1"/>
+      <line x1="12" y1="15" x2="20" y2="15" stroke="#475569" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="12" y1="19" x2="20" y2="19" stroke="#475569" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="12" y1="23" x2="16" y2="23" stroke="#475569" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>`;
   }
 
-  // Makefiles & build files
-  if (name === "makefile" || name === "cmakelists.txt" || ext === ".mk" || ext === ".cmake") {
-    return `<svg width="15" height="15" viewBox="0 0 16 16"><path d="M2 1a1 1 0 0 1 1-1h6l4 4v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V1z" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/><line x1="4" y1="5" x2="8" y2="5" stroke="#0284c7" stroke-width="1.2"/><line x1="4" y1="8" x2="11" y2="8" stroke="#0284c7" stroke-width="1.2"/><line x1="4" y1="11" x2="9" y2="11" stroke="#0284c7" stroke-width="1.2"/></svg>`;
+  // 3. Shell scripts (.sh, .bash, .zsh, .profile, .bashrc)
+  if (ext === ".sh" || ext === ".bash" || ext === ".zsh" || name.startsWith(".bash") || name.startsWith(".zsh") || name === ".profile") {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" class="file-badge-svg" style="flex-shrink:0;">
+      <path d="M7 4a3 3 0 0 1 3-3h9l7 7v19a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V4z" fill="#34d399"/>
+      <path d="M19 1v6a1 1 0 0 0 1 1h6" fill="#6ee7b7"/>
+      <path d="M12 17l2.5 2.5L12 22m3.5 0h4" stroke="#064e3b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
   }
 
-  // Python
-  if (ext === ".py") {
-    return `<svg width="15" height="15" viewBox="0 0 16 16"><rect width="15" height="15" rx="2" fill="#38bdf8"/><path d="M4 4h5v3H5v1h4v3H4z" fill="#facc15"/></svg>`;
+  // 4. Properties / Config files (.properties, .conf, .ini, .cfg, .env, .json, .yaml, .yml)
+  if ([".properties", ".conf", ".ini", ".cfg", ".env", ".json", ".yaml", ".yml", ".pinlog"].includes(ext) || name.includes("config")) {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" class="file-badge-svg" style="flex-shrink:0;">
+      <path d="M7 4a3 3 0 0 1 3-3h9l7 7v19a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V4z" fill="#c084fc"/>
+      <path d="M19 1v6a1 1 0 0 0 1 1h6" fill="#d8b4fe"/>
+      <circle cx="16" cy="18.5" r="2" stroke="#3b0764" stroke-width="1.6" fill="none"/>
+      <path d="M16 15v1.2m0 4.6V22m3.5-3.5h-1.2m-4.6 0H12.5" stroke="#3b0764" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>`;
   }
 
-  // Shell scripts
-  if (ext === ".sh" || ext === ".bash" || ext === ".zsh" || ext === ".ksh") {
-    return `<svg width="15" height="15" viewBox="0 0 16 16"><rect width="15" height="15" rx="2" fill="#047857"/><path d="M4 6l3 2-3 2M8 10h4" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  // 5. Code files (.py, .go, .js, .ts, .c, .cpp, .java, .html, .css)
+  if ([".py", ".go", ".js", ".ts", ".c", ".cpp", ".cc", ".h", ".java", ".html", ".css", ".sql"].includes(ext)) {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" class="file-badge-svg" style="flex-shrink:0;">
+      <path d="M7 4a3 3 0 0 1 3-3h9l7 7v19a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V4z" fill="#38bdf8"/>
+      <path d="M19 1v6a1 1 0 0 0 1 1h6" fill="#7dd3fc"/>
+      <path d="M13 17l-2 2 2 2m6-4l2 2-2 2" stroke="#0c4a6e" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
   }
 
-  // Archives
+  // 6. Archives (.tar, .gz, .zip, .rar, .7z, .deb, .rpm)
   if ([".tar", ".gz", ".tgz", ".zip", ".rar", ".7z", ".deb", ".rpm"].includes(ext)) {
-    return `<svg width="15" height="15" viewBox="0 0 16 16"><rect width="15" height="15" rx="2" fill="#d97706"/><line x1="2" y1="6" x2="14" y2="6" stroke="#ffffff" stroke-width="1.2"/></svg>`;
+    return `<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" class="file-badge-svg" style="flex-shrink:0;">
+      <path d="M7 4a3 3 0 0 1 3-3h9l7 7v19a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V4z" fill="#fb923c"/>
+      <path d="M19 1v6a1 1 0 0 0 1 1h6" fill="#fdba74"/>
+      <rect x="14" y="15" width="4" height="6" rx="1" stroke="#7c2d12" stroke-width="1.5" fill="none"/>
+      <line x1="16" y1="13" x2="16" y2="15" stroke="#7c2d12" stroke-width="1.5"/>
+    </svg>`;
   }
 
-  // Default document / text file
-  return `<svg width="15" height="15" viewBox="0 0 16 16"><path d="M2 1a1 1 0 0 1 1-1h6l5 5v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V1z" fill="#bae6fd" stroke="#38bdf8" stroke-width="0.8"/><polyline points="9 0 9 5 14 5" fill="#7dd3fc"/></svg>`;
+  // 7. Default file badge
+  return `<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" class="file-badge-svg" style="flex-shrink:0;">
+    <path d="M7 4a3 3 0 0 1 3-3h9l7 7v19a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V4z" fill="#94a3b8"/>
+    <path d="M19 1v6a1 1 0 0 0 1 1h6" fill="#cbd5e1"/>
+    <line x1="12" y1="16" x2="20" y2="16" stroke="#1e293b" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="12" y1="20" x2="18" y2="20" stroke="#1e293b" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>`;
+}
+
+export function getItemDescription(item) {
+  const name = (item.name || "").trim();
+  const lower = name.toLowerCase();
+
+  if (item.isDir) {
+    if (name === "..") return "Parent Directory";
+    if (lower === ".cache") return "Application cache files";
+    if (lower === ".config") return "Configuration files";
+    if (lower === ".cpan") return "Perl modules";
+    if (lower === ".java") return "Java related files";
+    if (lower === ".ssh") return "SSH keys and config";
+    if (lower.includes("cert")) return "Certificates and keys";
+    if (lower.includes("install")) return "Installation packages";
+    if (lower.includes("helm") || lower.includes("chart")) return "Helm chart files";
+    if (lower === "opt") return "Optional software";
+    if (lower.includes("oracle")) return "Oracle related files";
+    if (lower.includes("portal")) return "Portal application";
+    if (lower.includes("domain") || lower.includes("replace")) return "Domain related files";
+    if (lower.includes("repo") || lower.includes("git") || lower.includes("src")) return "Source code repositories";
+    if (lower === ".local") return "User local binaries & data";
+    if (lower === ".mozilla") return "Mozilla profile & cache";
+    if (lower === ".pki") return "PKI certificates";
+    if (lower === ".dbus") return "D-Bus session bus";
+    if (lower === ".vim") return "Vim configuration";
+    if (lower === "videos") return "Video media files";
+    if (lower === "templates") return "Document templates";
+    if (lower === "public") return "Public shared folder";
+    if (lower === "pictures") return "Image and photo files";
+    if (lower === "music") return "Audio and music files";
+    if (lower === "downloads") return "Downloaded files";
+    if (lower === "documents") return "User documents";
+    if (lower === "desktop") return "Desktop workspace";
+    if (lower === "etc") return "System configuration";
+    if (lower === "var" || lower === "log" || lower === "logs") return "System variable data & logs";
+    if (lower === "bin" || lower === "sbin") return "Binary executable commands";
+    if (lower === "tmp") return "Temporary files";
+    return "Folder";
+  }
+
+  // Files
+  if (lower === ".bash_history") return "Command history";
+  if (lower === ".bash_logout") return "Logout script";
+  if (lower === ".bashrc") return "Bash shell startup configuration";
+  if (lower === ".profile") return "User shell environment profile";
+  if (lower === ".zshrc") return "Zsh shell startup configuration";
+  if (lower === ".xauthority") return "X11 authentication authority";
+  if (lower === ".wget-hsts") return "Wget HSTS cache";
+  if (lower === "dead.letter") return "Failed email draft";
+  if (lower.includes("pinlog")) return "Application trace log";
+  if (lower.endsWith(".log")) return "System event log";
+  if (lower.endsWith(".properties")) return "Application properties";
+  if (lower.endsWith(".conf") || lower.endsWith(".cfg") || lower.endsWith(".ini")) return "Configuration settings";
+  if (lower.endsWith(".sh") || lower.endsWith(".bash")) return "Shell execution script";
+  if (lower.endsWith(".json")) return "JSON data document";
+  if (lower.endsWith(".yaml") || lower.endsWith(".yml")) return "YAML configuration";
+  if (lower.endsWith(".tar") || lower.endsWith(".gz") || lower.endsWith(".zip")) return "Compressed archive";
+  if (lower.endsWith(".py")) return "Python script";
+  if (lower.endsWith(".go")) return "Go source code";
+  if (lower.endsWith(".js") || lower.endsWith(".ts")) return "JavaScript file";
+  if (lower.endsWith(".txt")) return "Plain text document";
+  return item.permissions || "File";
+}
+
+export function getMobaFileIcon(item, size = 30) {
+  if (item.isDir) {
+    return getFolderBadgeIcon(item.name, false, null, size);
+  }
+  return getFileBadgeIcon(item, size);
 }
 
 export function formatMobaSize(bytes, isDir) {
   if (isDir) return "";
-  if (bytes <= 0) return "0";
-  if (bytes < 1024) return "1";
-  if (bytes < 1024 * 1024) return Math.max(1, Math.round(bytes / 1024)).toString();
-  return (bytes / (1024 * 1024)).toFixed(1) + "M";
+  if (bytes === undefined || bytes === null || bytes <= 0) return "0 B";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) {
+    const kb = (bytes / 1024).toFixed(1);
+    return kb.endsWith(".0") ? `${parseInt(kb, 10)} KB` : `${kb} KB`;
+  }
+  const mb = (bytes / (1024 * 1024)).toFixed(1);
+  return mb.endsWith(".0") ? `${parseInt(mb, 10)} MB` : `${mb} MB`;
 }
 
 export function detectSyntaxLanguage(fname = "") {
