@@ -464,21 +464,14 @@ export function setupEventListeners() {
   }
   function syncThemeToggleIcon() {
     const icon = document.getElementById("tbThemeToggleIcon");
-    const mobaIcon = document.getElementById("tbmThemeToggleIcon");
     const btn = document.getElementById("tbThemeToggleBtn");
-    const mobaBtn = document.getElementById("tbmThemeToggle");
-    const sunSvg = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>';
-    const moonSvg = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+    if (!icon) return;
     if (isLightTheme()) {
-      if (icon) icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
-      if (mobaIcon) mobaIcon.innerHTML = moonSvg;
+      icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
       if (btn) btn.title = "Light mode — click for Dark";
-      if (mobaBtn) mobaBtn.title = "Light mode — click for Dark";
     } else {
-      if (icon) icon.innerHTML = moonSvg;
-      if (mobaIcon) mobaIcon.innerHTML = sunSvg;
+      icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
       if (btn) btn.title = "Dark mode — click for Light";
-      if (mobaBtn) mobaBtn.title = "Dark mode — click for Light";
     }
   }
   function toggleLightDarkTheme() {
@@ -589,7 +582,6 @@ export function setupEventListeners() {
   safeClick("tbmPackages", () => { setMobaActive("tbmPackages"); showPkgMgrDialog(); });
   safeClick("tbmSettings", () => { setMobaActive("tbmSettings"); showSettingsDialog(); });
   safeClick("tbmHelp", () => { setMobaActive("tbmHelp"); showDocumentation(); });
-  safeClick("tbmThemeToggle", toggleLightDarkTheme);
 
   // ---- System Overview live counts ----
   function updateSystemOverview() {

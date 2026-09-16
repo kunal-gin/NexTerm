@@ -2451,49 +2451,6 @@ body, html {
   filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.45));
 }
 
-/* Far-right Theme Pill */
-.moba-tb-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  padding-left: 10px;
-}
-
-.moba-theme-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 8px 3px 4px;
-  border-radius: 9999px;
-  background: rgba(22, 27, 40, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #cbd5e1;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.moba-theme-pill:hover {
-  background: rgba(30, 37, 56, 0.95);
-  border-color: rgba(255, 255, 255, 0.22);
-}
-
-.moba-theme-sun {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #e2e8f0;
-}
-
-.moba-theme-sun svg {
-  width: 12px;
-  height: 12px;
-  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
-}
-
 /* Light theme */
 :root[data-theme="light-modern"] .moba-toolbar {
   background: #ffffff;
@@ -2508,15 +2465,6 @@ body, html {
 }
 :root[data-theme="light-modern"] .moba-tb-sep { background: #e2e8f0; }
 :root[data-theme="light-modern"] .moba-tb-label { color: #334155; }
-:root[data-theme="light-modern"] .moba-theme-pill {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-  color: #475569;
-}
-:root[data-theme="light-modern"] .moba-theme-sun {
-  background: #e2e8f0;
-  color: #0f172a;
-}
 
 /* menubar 24 + toolbar 52 + topbar 64 + status/multiexec 26 */
 #mainLayout { height: calc(100% - 24px - 52px - 64px - 26px) !important; }
