@@ -446,7 +446,7 @@ export function setupEventListeners() {
   navRailAction("navRailServers", async () => {
     switchSidebarView("sessions");
     if (window.go && window.go.main && window.go.main.App && window.go.main.App.ExpandAllFolders) {
-      try { await window.go.main.App.ExpandAllFolders(true); } catch (_) {}
+      try { await window.go.main.App.ExpandAllFolders(true); } catch (_) { }
     }
     await refreshTree();
   });
@@ -464,27 +464,32 @@ export function setupEventListeners() {
   }
   function syncThemeToggleIcon() {
     const icon = document.getElementById("tbThemeToggleIcon");
+    const mobaIcon = document.getElementById("tbmThemeToggleIcon");
     const btn = document.getElementById("tbThemeToggleBtn");
-    if (!icon) return;
+    const mobaBtn = document.getElementById("tbmThemeToggle");
+    const sunSvg = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>';
+    const moonSvg = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
     if (isLightTheme()) {
-      // currently light -> show sun (click to keep light? no: show moon meaning "switch to dark")
-      // We show the icon of the CURRENT mode so it reads as a status + toggle.
-      icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+      if (icon) icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+      if (mobaIcon) mobaIcon.innerHTML = moonSvg;
       if (btn) btn.title = "Light mode — click for Dark";
+      if (mobaBtn) mobaBtn.title = "Light mode — click for Dark";
     } else {
-      icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+      if (icon) icon.innerHTML = moonSvg;
+      if (mobaIcon) mobaIcon.innerHTML = sunSvg;
       if (btn) btn.title = "Dark mode — click for Light";
+      if (mobaBtn) mobaBtn.title = "Dark mode — click for Light";
     }
   }
   function toggleLightDarkTheme() {
     if (isLightTheme()) {
       let back = "dark-modern";
-      try { back = localStorage.getItem("nexterm_last_dark_theme") || "dark-modern"; } catch (_) {}
+      try { back = localStorage.getItem("nexterm_last_dark_theme") || "dark-modern"; } catch (_) { }
       if (back === "light-modern") back = "dark-modern";
       applyUITheme(back, true);
     } else {
       const cur = document.documentElement.getAttribute("data-theme") || "dark-modern";
-      try { localStorage.setItem("nexterm_last_dark_theme", cur); } catch (_) {}
+      try { localStorage.setItem("nexterm_last_dark_theme", cur); } catch (_) { }
       applyUITheme("light-modern", true);
     }
     syncThemeToggleIcon();
@@ -528,7 +533,7 @@ export function setupEventListeners() {
       activateHomeTab();
       const si = document.getElementById("welcomeSearchInput");
       if (si) { si.value = ws; }
-      try { refreshTree(ws); } catch (_) {}
+      try { refreshTree(ws); } catch (_) { }
     };
   });
 
@@ -569,17 +574,22 @@ export function setupEventListeners() {
   // ---- Quick-access icon toolbar (MobaXterm-style row under the menu) ----
   // Each button reuses an existing action so behaviour stays identical to the
   // menu / nav-rail. New SSH proxies the menu option so its dialog logic is shared.
-  safeClick("tbmSession", () => document.getElementById("mNewSSH")?.click());
-  safeClick("tbmLocal", () => startLocalTerminal("powershell"));
-  safeClick("tbmServers", () => activateHomeTab());
-  safeClick("tbmSplit", (e) => showSplitMenu(e.clientX, e.clientY + 10));
-  safeClick("tbmMultiExec", showMultiExecutionModal);
-  safeClick("tbmBroadcast", () => openBroadcastDialog("all"));
-  safeClick("tbmMonitor", () => openServerMonitor());
-  safeClick("tbmTunneling", () => showTunnelingDialog());
-  safeClick("tbmPackages", showPkgMgrDialog);
-  safeClick("tbmSettings", () => showSettingsDialog());
-  safeClick("tbmHelp", () => showDocumentation());
+  function setMobaActive(id) {
+    document.querySelectorAll(".moba-tb-btn").forEach(btn => btn.classList.remove("active"));
+    document.getElementById(id)?.classList.add("active");
+  }
+  safeClick("tbmSession", () => { setMobaActive("tbmSession"); document.getElementById("mNewSSH")?.click(); });
+  safeClick("tbmLocal", () => { setMobaActive("tbmLocal"); startLocalTerminal("powershell"); });
+  safeClick("tbmServers", () => { setMobaActive("tbmServers"); activateHomeTab(); });
+  safeClick("tbmSplit", (e) => { setMobaActive("tbmSplit"); showSplitMenu(e.clientX, e.clientY + 10); });
+  safeClick("tbmMultiExec", () => { setMobaActive("tbmMultiExec"); showMultiExecutionModal(); });
+  safeClick("tbmBroadcast", () => { setMobaActive("tbmBroadcast"); openBroadcastDialog("all"); });
+  safeClick("tbmMonitor", () => { setMobaActive("tbmMonitor"); openServerMonitor(); });
+  safeClick("tbmTunneling", () => { setMobaActive("tbmTunneling"); showTunnelingDialog(); });
+  safeClick("tbmPackages", () => { setMobaActive("tbmPackages"); showPkgMgrDialog(); });
+  safeClick("tbmSettings", () => { setMobaActive("tbmSettings"); showSettingsDialog(); });
+  safeClick("tbmHelp", () => { setMobaActive("tbmHelp"); showDocumentation(); });
+  safeClick("tbmThemeToggle", toggleLightDarkTheme);
 
   // ---- System Overview live counts ----
   function updateSystemOverview() {
@@ -1179,7 +1189,7 @@ export function setupEventListeners() {
       if (savedW && savedW >= SIDEBAR_MIN && savedW <= SIDEBAR_MAX) {
         sidebarEl.style.width = savedW + "px";
       }
-    } catch (_) {}
+    } catch (_) { }
 
     let sbDragging = false;
     sidebarResizer.addEventListener("mousedown", (e) => {
@@ -1203,78 +1213,78 @@ export function setupEventListeners() {
       document.body.style.userSelect = "";
       try {
         localStorage.setItem("nexterm_sidebar_width", String(parseInt(sidebarEl.style.width, 10) || SIDEBAR_DEFAULT));
-      } catch (_) {}
+      } catch (_) { }
       refitAllTerminals();
     });
     sidebarResizer.addEventListener("dblclick", () => {
       sidebarEl.style.width = SIDEBAR_DEFAULT + "px";
-      try { localStorage.setItem("nexterm_sidebar_width", String(SIDEBAR_DEFAULT)); } catch (_) {}
+      try { localStorage.setItem("nexterm_sidebar_width", String(SIDEBAR_DEFAULT)); } catch (_) { }
       refitAllTerminals();
     });
   }
 
   // Global Shortcuts
   window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        hideContextMenu();
-        hideModal();
-        closeCommandPalette();
-      }
-      // F1 or Shift+? → keyboard cheat-sheet (ignore while typing in a field)
-      const typingInField = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || "");
-      if ((e.key === "F1" || (e.shiftKey && e.key === "?")) && !typingInField) {
+    if (e.key === "Escape") {
+      hideContextMenu();
+      hideModal();
+      closeCommandPalette();
+    }
+    // F1 or Shift+? → keyboard cheat-sheet (ignore while typing in a field)
+    const typingInField = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || "");
+    if ((e.key === "F1" || (e.shiftKey && e.key === "?")) && !typingInField) {
+      e.preventDefault();
+      showShortcutsOverlay();
+    }
+    if (e.altKey && (e.key === "m" || e.key === "M")) {
+      e.preventDefault();
+      showMultiExecutionModal();
+    }
+    if ((e.altKey && (e.key === "b" || e.key === "B")) || ((e.ctrlKey || e.metaKey) && e.altKey && (e.key === "b" || e.key === "B"))) {
+      e.preventDefault();
+      openBroadcastDialog("all");
+    }
+    if (e.ctrlKey || e.metaKey) {
+      if ((e.key === "k" || e.key === "K") && !e.shiftKey) {
         e.preventDefault();
-        showShortcutsOverlay();
+        openCommandPalette();
       }
-      if (e.altKey && (e.key === "m" || e.key === "M")) {
+      if ((e.shiftKey && (e.key === "F" || e.key === "f")) || (!e.shiftKey && (e.key === "f" || e.key === "F"))) {
+        if (activeTabId && tabs[activeTabId]) {
+          e.preventDefault();
+          openTerminalSearch(activeTabId);
+        }
+      }
+      if (e.shiftKey && (e.key === "E" || e.key === "e")) {
         e.preventDefault();
-        showMultiExecutionModal();
+        splitPane(workspaceState.activePaneId, "right");
       }
-      if ((e.altKey && (e.key === "b" || e.key === "B")) || ((e.ctrlKey || e.metaKey) && e.altKey && (e.key === "b" || e.key === "B"))) {
+      if (e.shiftKey && (e.key === "O" || e.key === "o")) {
         e.preventDefault();
-        openBroadcastDialog("all");
+        splitPane(workspaceState.activePaneId, "down");
       }
-      if (e.ctrlKey || e.metaKey) {
-        if ((e.key === "k" || e.key === "K") && !e.shiftKey) {
-          e.preventDefault();
-          openCommandPalette();
-        }
-        if ((e.shiftKey && (e.key === "F" || e.key === "f")) || (!e.shiftKey && (e.key === "f" || e.key === "F"))) {
-          if (activeTabId && tabs[activeTabId]) {
-            e.preventDefault();
-            openTerminalSearch(activeTabId);
-          }
-        }
-        if (e.shiftKey && (e.key === "E" || e.key === "e")) {
-          e.preventDefault();
-          splitPane(workspaceState.activePaneId, "right");
-        }
-        if (e.shiftKey && (e.key === "O" || e.key === "o")) {
-          e.preventDefault();
-          splitPane(workspaceState.activePaneId, "down");
-        }
-        if (e.shiftKey && (e.key === "M" || e.key === "m")) {
-          e.preventDefault();
-          toggleMaximizePane(workspaceState.activePaneId);
-        }
-        if (e.shiftKey && (e.key === "|" || e.key === "\\")) {
-          e.preventDefault();
-          setSplitMode(workspaceState.layout === "split-v" ? "single" : "split-v");
-        }
-        if (e.shiftKey && (e.key === "_" || e.key === "-")) {
-          e.preventDefault();
-          setSplitMode(workspaceState.layout === "split-h" ? "single" : "split-h");
-        }
-        if (e.key === "n" && !e.shiftKey) {
-          e.preventDefault();
-          showNewSessionDialog();
-        }
-        if (e.key === "w" && !e.shiftKey && activeTabId && activeTabId !== "home") {
-          e.preventDefault();
-          closeTab(activeTabId);
-        }
+      if (e.shiftKey && (e.key === "M" || e.key === "m")) {
+        e.preventDefault();
+        toggleMaximizePane(workspaceState.activePaneId);
       }
-    });
+      if (e.shiftKey && (e.key === "|" || e.key === "\\")) {
+        e.preventDefault();
+        setSplitMode(workspaceState.layout === "split-v" ? "single" : "split-v");
+      }
+      if (e.shiftKey && (e.key === "_" || e.key === "-")) {
+        e.preventDefault();
+        setSplitMode(workspaceState.layout === "split-h" ? "single" : "split-h");
+      }
+      if (e.key === "n" && !e.shiftKey) {
+        e.preventDefault();
+        showNewSessionDialog();
+      }
+      if (e.key === "w" && !e.shiftKey && activeTabId && activeTabId !== "home") {
+        e.preventDefault();
+        closeTab(activeTabId);
+      }
+    }
+  });
 }
 
 // --------------------------------------------------------------------------
@@ -1287,7 +1297,7 @@ export async function init() {
     try {
       const parsed = JSON.parse(savedSettings);
       Object.assign(userSettings, parsed);
-    } catch (e) {}
+    } catch (e) { }
   }
 
   // Apply saved or default UI theme immediately
@@ -1299,7 +1309,7 @@ export async function init() {
       if (custom && custom.appName) {
         document.title = custom.appName;
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   setupEventListeners();
@@ -1342,7 +1352,7 @@ export async function init() {
 
   // Auto-open any session groups flagged "auto-start" (after the tree is loaded
   // so saved profiles can be resolved). Small delay lets the workspace settle.
-  setTimeout(() => { try { maybeAutoStartGroups(); } catch (_) {} }, 1200);
+  setTimeout(() => { try { maybeAutoStartGroups(); } catch (_) { } }, 1200);
 }
 
 // Auto-run on DOMContentLoaded

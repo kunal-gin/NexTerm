@@ -38,7 +38,8 @@ body, html {
 }
 
 .menu-item {
-  padding: 3px 9px !important;
+  position: relative !important;
+  padding: 4px 10px !important;
   font-size: 11.5px !important;
   font-weight: 500 !important;
   color: #94a3b8 !important;
@@ -48,8 +49,21 @@ body, html {
 
 .menu-item:hover,
 .menu-item.active {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(168, 85, 247, 0.12) !important;
   color: #ffffff !important;
+}
+
+.menu-item:hover::after,
+.menu-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 16%;
+  right: 16%;
+  height: 2px;
+  background: #a855f7;
+  border-radius: 2px;
+  box-shadow: 0 0 8px #a855f7, 0 0 16px rgba(168, 85, 247, 0.6);
 }
 
 .dropdown-menu {
@@ -2283,67 +2297,23 @@ body, html {
 :root[data-theme="light-modern"] .doc-shortcuts td { color: #334155; }
 
 /* =========================================================================
-   Quick-access icon toolbar (MobaXterm-style row under the text menu)
+   Quick-access icon toolbar (Modern Vibrant Visual Style matching mockup)
    ========================================================================= */
 .moba-toolbar {
   display: flex;
   align-items: center;
-  gap: 2px;
-  flex-wrap: wrap;
-  padding: 6px 10px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.10));
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  gap: 6px;
+  flex-wrap: nowrap;
+  padding: 4px 12px;
+  background: #0b0e17;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 12px rgba(0, 0, 0, 0.25);
   user-select: none;
-}
-.moba-tb-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  min-width: 60px;
-  padding: 5px 9px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  background: transparent;
-  color: #cbd5e1;
-  cursor: pointer;
-  transition: background .12s ease, border-color .12s ease, color .12s ease, transform .06s ease;
-}
-.moba-tb-btn:hover {
-  background: rgba(99,102,241,0.14);
-  border-color: rgba(99,102,241,0.35);
-  color: #fff;
-}
-.moba-tb-btn:active { transform: translateY(1px); }
-.moba-tb-ico { display: inline-flex; }
-.moba-tb-ico svg { width: 20px; height: 20px; }
-.moba-tb-label { font-size: 10.5px; font-weight: 600; letter-spacing: .2px; line-height: 1; }
-.moba-tb-sep {
-  width: 1px;
-  align-self: stretch;
-  margin: 3px 6px;
-  background: rgba(255,255,255,0.12);
+  overflow-x: auto;
+  overflow-y: hidden;
+  box-sizing: border-box;
 }
 
-/* Light theme */
-:root[data-theme="light-modern"] .moba-toolbar {
-  background: linear-gradient(180deg, #ffffff, #f1f5f9);
-  border-bottom-color: #e2e8f0;
-}
-:root[data-theme="light-modern"] .moba-tb-btn { color: #475569; }
-:root[data-theme="light-modern"] .moba-tb-btn:hover {
-  background: rgba(99,102,241,0.12);
-  border-color: rgba(99,102,241,0.30);
-  color: #1e293b;
-}
-:root[data-theme="light-modern"] .moba-tb-sep { background: #e2e8f0; }
-
-/* =========================================================================
-   Layout fix: account for the quick-access toolbar row so the content area
-   (and the ☰ nav drawer, which spans .main-layout) fits the screen — was
-   overflowing the bottom in fullscreen after the toolbar was added.
-   ========================================================================= */
 #mobaToolbar.moba-toolbar {
   height: 52px;
   flex-wrap: nowrap;
@@ -2351,7 +2321,202 @@ body, html {
   overflow-y: hidden;
   box-sizing: border-box;
 }
-#mobaToolbar .moba-tb-btn { padding: 3px 9px; }
-#mobaToolbar .moba-tb-ico svg { width: 18px; height: 18px; }
+
+.moba-tb-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 58px;
+  height: 42px;
+  padding: 3px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease;
+}
+
+.moba-tb-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+.moba-tb-btn:active {
+  transform: scale(0.97);
+}
+
+/* Active / selected button style (matches "Session ⌵" in screenshot) */
+.moba-tb-btn.active,
+#tbmSession.active {
+  background: rgba(168, 85, 247, 0.12) !important;
+  border: 1px solid rgba(168, 85, 247, 0.6) !important;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.25) !important;
+  color: #f8fafc !important;
+}
+
+.moba-tb-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  transition: transform 0.15s ease;
+}
+
+.moba-tb-btn:hover .moba-tb-ico {
+  transform: translateY(-1px);
+}
+
+.moba-tb-ico svg {
+  width: 19px;
+  height: 19px;
+}
+
+.moba-tb-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15px;
+  line-height: 1;
+  color: #cbd5e1;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.moba-tb-chevron {
+  width: 7px;
+  height: 5px;
+  margin-left: 3px;
+  opacity: 0.7;
+}
+
+.moba-tb-btn:hover .moba-tb-chevron {
+  opacity: 1;
+}
+
+.moba-tb-sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 2px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Specific button icon colors & neon glows */
+#tbmSession .moba-tb-ico {
+  color: #c084fc;
+  filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.45));
+}
+#tbmLocal .moba-tb-ico {
+  color: #38bdf8;
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.45));
+}
+#tbmServers .moba-tb-ico {
+  color: #34d399;
+  filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.45));
+}
+#tbmSplit .moba-tb-ico {
+  color: #38bdf8;
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.45));
+}
+#tbmMultiExec .moba-tb-ico {
+  color: #c084fc;
+  filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.45));
+}
+#tbmBroadcast .moba-tb-ico {
+  color: #34d399;
+  filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.45));
+}
+#tbmMonitor .moba-tb-ico {
+  color: #fbbf24;
+  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.45));
+}
+#tbmTunneling .moba-tb-ico {
+  color: #f472b6;
+  filter: drop-shadow(0 0 6px rgba(244, 114, 182, 0.45));
+}
+#tbmPackages .moba-tb-ico {
+  color: #38bdf8;
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.45));
+}
+#tbmSettings .moba-tb-ico {
+  color: #e2e8f0;
+  filter: drop-shadow(0 0 5px rgba(226, 232, 240, 0.35));
+}
+#tbmHelp .moba-tb-ico {
+  color: #c084fc;
+  filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.45));
+}
+
+/* Far-right Theme Pill */
+.moba-tb-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+}
+
+.moba-theme-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px 3px 4px;
+  border-radius: 9999px;
+  background: rgba(22, 27, 40, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.moba-theme-pill:hover {
+  background: rgba(30, 37, 56, 0.95);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.moba-theme-sun {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #e2e8f0;
+}
+
+.moba-theme-sun svg {
+  width: 12px;
+  height: 12px;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
+}
+
+/* Light theme */
+:root[data-theme="light-modern"] .moba-toolbar {
+  background: #ffffff;
+  border-bottom-color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+:root[data-theme="light-modern"] .moba-tb-btn { color: #475569; }
+:root[data-theme="light-modern"] .moba-tb-btn:hover {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.22);
+  color: #0f172a;
+}
+:root[data-theme="light-modern"] .moba-tb-sep { background: #e2e8f0; }
+:root[data-theme="light-modern"] .moba-tb-label { color: #334155; }
+:root[data-theme="light-modern"] .moba-theme-pill {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+:root[data-theme="light-modern"] .moba-theme-sun {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
 /* menubar 24 + toolbar 52 + topbar 64 + status/multiexec 26 */
 #mainLayout { height: calc(100% - 24px - 52px - 64px - 26px) !important; }
