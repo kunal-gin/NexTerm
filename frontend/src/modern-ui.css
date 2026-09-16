@@ -1739,20 +1739,26 @@ body, html {
 
 /* Three panels */
 .nx-panels { display: grid; grid-template-columns: 340px 1fr 320px; gap: 16px; align-items: stretch; }
-.nx-panel { background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.008)), rgba(14,18,28,0.72); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; display: flex; flex-direction: column; min-height: 380px; max-height: 460px; overflow: hidden; }
-.nx-panel-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); flex: 0 0 auto; }
+/* overflow must NOT be hidden — inner .nx-saved-list handles its own scroll */
+.nx-panel { background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.008)), rgba(14,18,28,0.72); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; display: flex; flex-direction: column; min-height: 380px; max-height: 480px; overflow: visible; }
+.nx-panel-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); flex: 0 0 auto; border-radius: 16px 16px 0 0; }
 .nx-panel-title { display: flex; align-items: center; gap: 9px; font-size: 13.5px; font-weight: 700; color: #f1f5f9; }
 .nx-panel-title svg { color: #38bdf8; }
 .nx-panel-add { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: rgba(56,189,248,0.14); border: 1px solid rgba(56,189,248,0.3); border-radius: 8px; color: #38bdf8; cursor: pointer; }
 .nx-panel-add:hover { background: rgba(56,189,248,0.24); }
 
 /* Saved sessions panel */
-.nx-saved-search { display: flex; align-items: center; gap: 9px; margin: 12px 14px 8px; padding: 0 12px; height: 36px; background: rgba(9,12,19,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #64748b; }
+.nx-saved-search { display: flex; align-items: center; gap: 9px; margin: 12px 14px 8px; padding: 0 12px; height: 36px; background: rgba(9,12,19,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #64748b; flex-shrink: 0; }
 .nx-saved-search input { flex: 1; background: transparent; border: none; outline: none; color: #f1f5f9; font-size: 12.5px; }
 .nx-saved-search input::placeholder { color: #64748b; }
 .nx-saved-filter { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 7px; color: #64748b; cursor: pointer; }
 .nx-saved-filter:hover { background: rgba(56,189,248,0.14); color: #38bdf8; }
-.nx-saved-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 4px 12px 12px; }
+/* flex:1 + min-height:0 is the key — lets this grow inside the flex parent and scroll */
+.nx-saved-list { flex: 1 1 0; min-height: 0; overflow-y: auto; padding: 4px 12px 12px; border-radius: 0 0 16px 16px; }
+.nx-saved-list::-webkit-scrollbar { width: 4px; }
+.nx-saved-list::-webkit-scrollbar-track { background: transparent; }
+.nx-saved-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+.nx-saved-list::-webkit-scrollbar-thumb:hover { background: rgba(56,189,248,0.4); }
 /* compact reuse of existing env-group + cards inside the saved panel */
 .nx-saved-list .home-env-group { margin-bottom: 10px; }
 .nx-saved-list .home-env-header { padding: 4px 2px 6px; }
