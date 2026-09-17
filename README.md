@@ -40,16 +40,16 @@
 ├──────────────────────────────────────────────────────────────────────────────────────────────────────┤
 │ ☰  NexTerm  CONNECT BEYOND LIMITS  │ 🔍 Search servers, sessions... [Ctrl+K] │ 🖥️  🌙  🔔(10)  ⚙️    │
 ├────────────────────────────────────┼─────────────────────────────────────────────────────────────────┤
-│ Quick connect...                   │ [🏠] [🟢 (1) AVI-IT-SRV-BRM-01 TEST] [🔵 (2) PowerShell] [+] ⚙ │
+│ Quick connect...                   │ [🏠] [🟢 (1) srv-linux-prod-01 TEST] [🔵 (2) PowerShell] [+] ⚙ │
 ├────────────────────────────────────┼─────────────────────────────────────────────────────────────────┤
-│ 📁 SFTP BROWSER (/home/pin)        │ • Connecting to pin@192.168.1.7:22...                           │
-│ ├─ 📁 .cache                       │ • Authenticating user 'pin'...                                  │
-│ ├─ 📁 .config                      │ • Connected to 192.168.1.7                                      │
+│ 📁 SFTP BROWSER (/home/admin)      │ • Connecting to admin@10.0.0.15:22...                           │
+│ ├─ 📁 .cache                       │ • Authenticating user 'admin'...                                │
+│ ├─ 📁 .config                      │ • Connected to 10.0.0.15                                        │
 │ ├─ 📁 .local                       │                                                                 │
-│ ├─ 📁 .ssh                         │ [pin@AVI-IT-SRV-BRM-01 ~]$ █                                    │
+│ ├─ 📁 .ssh                         │ [admin@srv-linux-prod-01 ~]$ █                                  │
 │ └─ 📁 Documents                    │                                                                 │
 ├────────────────────────────────────┴─────────────────────────────────────────────────────────────────┤
-│ 🟢 pin (192.168.1.7) • [1] AVI-IT-SRV-BRM-01 • SSH • CPU 2.4% • RAM 11.6/30.9 GB • 2 active tabs    │
+│ 🟢 admin (10.0.0.15) • [1] srv-linux-prod-01 • SSH • CPU 2.4% • RAM 11.6/30.9 GB • 2 active tabs    │
 └──────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -88,8 +88,8 @@
 - Record terminal keystrokes, save with custom names, and replay with 1-click on any single session or session group.
 - **Pre-Seeded Playbooks**:
   - `System Diagnostics`: `uname -a; df -h; free -m; uptime; top -b -n 1 | head -n 20`
-  - `Oracle BRM Status`: `cd $PIN_HOME; ./pin_ctl status; ps -ef | grep pin`
-  - `BRM Restart`: `cd $PIN_HOME; ./pin_ctl stop; sleep 3; ./pin_ctl start`
+  - `Docker Container Status`: `docker ps -a; docker stats --no-stream`
+  - `Nginx Service Reload`: `sudo nginx -t && sudo systemctl reload nginx`
   - `Network Ports Diagnostics`: `ss -tulpn; ip addr; netstat -rn`
 
 ### 🖥️ 7. Multi-Protocol Session Wizard
