@@ -20,7 +20,8 @@ export let userSettings = {
   autoCopySelection: true,
   autoReconnect: false,
   reconnectAttempts: 5,
-  reconnectDelay: 2
+  reconnectDelay: 2,
+  notificationLevel: "minimal"
 };
 
 export function loadSettings() {
@@ -531,6 +532,16 @@ export async function showSettingsDialog() {
             <span>Auto-Copy Highlighted Selection to Clipboard</span>
           </label>
         </div>
+        <div class="form-group" style="margin-top: 10px;">
+          <label>Notification Level</label>
+          <select id="cfgNotifLevel">
+            <option value="minimal" ${userSettings.notificationLevel !== 'all' ? 'selected' : ''}>Minimal (Connect/Disconnect & Background Tasks only)</option>
+            <option value="all" ${userSettings.notificationLevel === 'all' ? 'selected' : ''}>All Events (Verbose alerts)</option>
+          </select>
+          <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">
+            Minimal mode keeps notifications clean: only alerting on connect, disconnect, and background command completion.
+          </div>
+        </div>
         <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-subtle);">
           <div style="font-weight: 600; font-size: 12px; margin-bottom: 8px; color: var(--accent-cyan);">🔄 Reconnection Preferences</div>
           <div class="form-group">
@@ -957,6 +968,7 @@ export async function showSettingsDialog() {
     userSettings.autoReconnect = box.querySelector("#cfgAutoReconnect") ? box.querySelector("#cfgAutoReconnect").checked : false;
     userSettings.reconnectAttempts = parseInt(box.querySelector("#cfgReconnectAttempts")?.value, 10) || 5;
     userSettings.reconnectDelay = parseInt(box.querySelector("#cfgReconnectDelay")?.value, 10) || 2;
+    userSettings.notificationLevel = box.querySelector("#cfgNotifLevel") ? box.querySelector("#cfgNotifLevel").value : "minimal";
 
     saveSettings();
 

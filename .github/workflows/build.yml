@@ -34,7 +34,8 @@ jobs:
       - name: Package Portable Windows Zip
         shell: pwsh
         run: |
-          Compress-Archive -Path "build/bin/nexterm.exe" -DestinationPath "build/bin/Nexterm-v1.0.0-windows-amd64-portable.zip" -Force
+          $ver = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } else { "latest" }
+          Compress-Archive -Path "build/bin/nexterm.exe" -DestinationPath "build/bin/Nexterm-${ver}-windows-amd64-portable.zip" -Force
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
@@ -73,8 +74,8 @@ jobs:
       - name: Package macOS App as Zip
         run: |
           cd build/bin
-          # Use ditto to preserve code signature inside the zip
-          ditto -c -k --sequesterRsrc --keepParent nexterm.app Nexterm-v1.0.0-macos-arm64.zip
+          VER="${GITHUB_REF_NAME:-latest}"
+          ditto -c -k --sequesterRsrc --keepParent nexterm.app "Nexterm-${VER}-macos-arm64.zip"
           cd ../..
 
       - name: Upload macOS Artifact
@@ -109,7 +110,8 @@ jobs:
 
       - name: Package Linux Binary as tar.gz
         run: |
-          tar -czvf build/bin/Nexterm-v1.0.0-linux-amd64.tar.gz -C build/bin nexterm
+          VER="${GITHUB_REF_NAME:-latest}"
+          tar -czvf "build/bin/Nexterm-${VER}-linux-amd64.tar.gz" -C build/bin nexterm
 
       - name: Upload Linux Artifact
         uses: actions/upload-artifact@v4

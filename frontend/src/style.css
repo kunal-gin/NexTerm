@@ -2280,6 +2280,96 @@ html, body, #app {
 .toast.info,
 .toast-item.toast-info { border-left: 4px solid #38bdf8; }
 
+.toast-item.toast-clickable {
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.toast-item.toast-clickable:hover {
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 14px rgba(16, 185, 129, 0.25);
+}
+
+.toast-clickable-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toast-click-action {
+  font-size: 10.5px;
+  color: #38bdf8;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tab-notify-dot.tab-done-badge {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 2px;
+  background: rgba(16, 185, 129, 0.22);
+  border: 1px solid rgba(16, 185, 129, 0.6);
+  color: #34d399;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-left: 6px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);
+  animation: pulseDone 2s infinite ease-in-out;
+}
+
+@keyframes pulseDone {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 8px 2px rgba(16, 185, 129, 0.3);
+    transform: scale(1.04);
+  }
+}
+
+.connected-notify-dot.connected-done-badge {
+  background: #10b981;
+  color: #fff;
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.notif-item.notif-clickable {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.notif-item.notif-clickable:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.notif-jump-hint {
+  color: #38bdf8;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.notif-mode-tag {
+  font-size: 9.5px;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 600;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
 /* Password Management in Settings */
 .pwd-vault-list {
   display: flex;

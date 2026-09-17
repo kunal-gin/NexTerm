@@ -21,20 +21,88 @@ export function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
-export function showToast(message, type = "info") {
-  // Record every toast into the notification center history.
-  try { pushNotification(message, type); } catch (_) {}
+let notifTabSwitcher = null;
+
+export function registerNotifTabSwitcher(fn) {
+  notifTabSwitcher = fn;
+}
+
+export function isMinimalNotificationMode() {
+  try {
+    const raw = localStorage.getItem("nexterm_settings");
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (s && s.notificationLevel !== undefined) {
+        return s.notificationLevel === "minimal";
+      }
+    }
+  } catch (_) {}
+  return true; // Default: Minimal notifications
+}
+
+function isEssentialNotification(msg, type, options = {}) {
+  if (options.isSystemEvent || options.isEssential) return true;
+  const evt = options.eventType;
+  if (evt === "connect" || evt === "disconnect" || evt === "process-done") return true;
+  if (type === "error" || type === "warning") return true;
+
+  const m = String(msg).toLowerCase();
+  if (m.startsWith("● connected") || m.startsWith("connected to") || m.includes("reconnected to")) return true;
+  if (m.startsWith("● disconnected") || m.includes("connection lost") || m.includes("disconnected from")) return true;
+  if (m.startsWith("✓ process") || m.includes("process completed") || m.includes("process finished")) return true;
+  if (m.includes("failed") || m.includes("authentication error") || m.includes("host key")) return true;
+
+  return false;
+}
+
+export function showToast(message, type = "info", options = {}) {
+  const msg = String(message == null ? "" : message).trim();
+  if (!msg) return;
+
+  const isEssential = isEssentialNotification(msg, type, options);
+  const isMinimal = isMinimalNotificationMode();
+
+  // In minimal mode, suppress trivial notifications from popping up toasts
+  if (isMinimal && !isEssential) {
+    return;
+  }
+
+  // Record essential toasts into the notification center history
+  try {
+    pushNotification(msg, type, options);
+  } catch (_) {}
 
   const container = document.getElementById("toastContainer");
   if (!container) return;
   const toast = document.createElement("div");
-  toast.className = `toast-item toast-${type}`;
-  toast.textContent = message;
+  const isClickable = !!(options.onClick || options.tabId);
+  toast.className = `toast-item toast-${type}${isClickable ? ' toast-clickable' : ''}`;
+
+  if (isClickable) {
+    toast.innerHTML = `
+      <div class="toast-clickable-content">
+        <div class="toast-msg-text">${escapeHtml(msg)}</div>
+        <div class="toast-click-action">Switch to tab ➔</div>
+      </div>
+    `;
+    toast.onclick = () => {
+      if (typeof options.onClick === "function") {
+        options.onClick();
+      } else if (options.tabId && typeof notifTabSwitcher === "function") {
+        notifTabSwitcher(options.tabId);
+      }
+      toast.remove();
+    };
+  } else {
+    toast.textContent = msg;
+  }
+
   container.appendChild(toast);
+  const duration = options.durationMs || (isClickable ? 5000 : 3500);
   setTimeout(() => {
     toast.classList.add("fade-out");
     setTimeout(() => toast.remove(), 300);
-  }, 3500);
+  }, duration);
 }
 
 // ==========================================================================
@@ -44,7 +112,7 @@ export function showToast(message, type = "info") {
 
 const NOTIF_KEY = "nexterm_notifications";
 const NOTIF_MAX = 60;
-let notifications = null;      // lazy-loaded array of {id, message, type, ts, read}
+let notifications = null;      // lazy-loaded array of {id, message, type, tabId, ts, read}
 let notifPanelOpen = false;
 let notifOutsideHandler = null;
 
@@ -65,14 +133,24 @@ function persistNotifications() {
   } catch (_) {}
 }
 
-export function pushNotification(message, type = "info") {
+export function pushNotification(message, type = "info", options = {}) {
   loadNotifications();
   const msg = String(message == null ? "" : message).trim();
   if (!msg) return;
+
+  const isEssential = isEssentialNotification(msg, type, options);
+  const isMinimal = isMinimalNotificationMode();
+
+  // In minimal mode, only record essential alerts in persistent notification center
+  if (isMinimal && !isEssential) {
+    return;
+  }
+
   notifications.unshift({
     id: Date.now() + "-" + Math.random().toString(36).slice(2, 7),
     message: msg,
     type,
+    tabId: options.tabId || null,
     ts: Date.now(),
     read: false
   });
@@ -128,23 +206,33 @@ function renderNotifPanel() {
   const listHtml = notifications.length === 0
     ? `<div class="notif-empty">No notifications yet</div>`
     : notifications.map(n => `
-        <div class="notif-item ${n.read ? 'read' : 'unread'}">
+        <div class="notif-item ${n.read ? 'read' : 'unread'}${n.tabId ? ' notif-clickable' : ''}" data-tab-id="${n.tabId || ''}" title="${n.tabId ? 'Click to switch to this tab' : ''}">
           <span class="notif-dot notif-${escapeHtml(n.type)}">${NOTIF_ICONS[n.type] || "i"}</span>
           <div class="notif-body">
             <div class="notif-msg">${escapeHtml(n.message)}</div>
-            <div class="notif-time">${relTime(n.ts)}</div>
+            <div class="notif-time">${relTime(n.ts)}${n.tabId ? ' • <span class="notif-jump-hint">Go to tab ➔</span>' : ''}</div>
           </div>
         </div>`).join("");
 
   panel.innerHTML = `
     <div class="notif-head">
-      <span class="notif-title">Notifications</span>
+      <span class="notif-title">Notifications <span class="notif-mode-tag">${isMinimalNotificationMode() ? 'Minimal' : 'All'}</span></span>
       <div class="notif-head-actions">
         <button type="button" id="notifMarkAll" class="notif-link">Mark all read</button>
         <button type="button" id="notifClearAll" class="notif-link">Clear</button>
       </div>
     </div>
     <div class="notif-list">${listHtml}</div>`;
+
+  panel.querySelectorAll(".notif-item.notif-clickable").forEach(item => {
+    item.addEventListener("click", () => {
+      const tid = item.getAttribute("data-tab-id");
+      if (tid && typeof notifTabSwitcher === "function") {
+        notifTabSwitcher(tid);
+        closeNotificationPanel();
+      }
+    });
+  });
 
   const markBtn = panel.querySelector("#notifMarkAll");
   const clearBtn = panel.querySelector("#notifClearAll");

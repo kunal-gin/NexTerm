@@ -38,7 +38,13 @@ import {
   syncSFTPToCurrentTerminalCwd
 } from "./terminal.js";
 import { userSettings, THEMES } from "../settings/settings.js";
-import { showToast, updateStatus, escapeHtml } from "../ui/notifications.js";
+import { showToast, updateStatus, escapeHtml, registerNotifTabSwitcher } from "../ui/notifications.js";
+import {
+  notifyProcessStarted,
+  notifyProcessOutput,
+  clearTabProcess,
+  registerSwitchTabHandler
+} from "./processNotifier.js";
 import { promptPasswordDialog, promptPassphraseDialog, promptBastionSecretDialog, registerLocalTerminalLauncher } from "../ui/modal.js";
 import { getContextMenuEl, posMenu, hideContextMenu } from "../ui/contextMenu.js";
 import { openBroadcastDialog } from "./broadcast.js";
@@ -565,6 +571,7 @@ export function activateTab(tabId) {
 
   setActiveTabId(tabId);
   markTabActivity(tabId, false);
+  try { clearTabProcess(tabId); } catch (_) {}
 
   const ownerPane = workspaceState.panes.find(p => p.tabIds && p.tabIds.includes(tabId));
   if (ownerPane) {
@@ -613,9 +620,20 @@ export function activateTab(tabId) {
   updateStatus();
 }
 
+try {
+  registerSwitchTabHandler(activateTab);
+  registerNotifTabSwitcher(activateTab);
+} catch (_) {}
+
 export function closeTab(tabId) {
   const t = tabs[tabId];
   if (!t) return;
+
+  if (t.isConnected) {
+    const sName = t.profile?.name || t.profile?.host || (t.isLocal ? "Local Terminal" : "Session");
+    showToast(`● Disconnected: ${sName}`, "info", { eventType: "disconnect", isSystemEvent: true });
+  }
+  try { clearTabProcess(tabId); } catch (_) {}
 
   // Flush and close any active session log for this tab.
   if (t.logging && window.go && window.go.main && window.go.main.App && window.go.main.App.StopSessionLog) {
@@ -911,16 +929,19 @@ export function createTab(tabId, profile, isLocal = false, initialState = "Conne
       window.go.main.App.WriteToTerminal(tabId, data);
     }
 
-    if (isLocal) return;
-
     for (let i = 0; i < data.length; i++) {
       const ch = data[i];
       if (ch === "\r" || ch === "\n") {
         const cmd = inputBuffer.trim();
         inputBuffer = "";
-        handleTerminalCdCommand(tabId, cmd);
-        try { recordCommand(tabId, cmd); } catch (_) {}
-        try { pushHistory(tabs[tabId] && tabs[tabId].profile ? tabs[tabId].profile.host : "", cmd); } catch (_) {}
+        if (cmd) {
+          try { notifyProcessStarted(tabId, cmd); } catch (_) {}
+        }
+        if (!isLocal) {
+          handleTerminalCdCommand(tabId, cmd);
+          try { recordCommand(tabId, cmd); } catch (_) {}
+          try { pushHistory(tabs[tabId] && tabs[tabId].profile ? tabs[tabId].profile.host : "", cmd); } catch (_) {}
+        }
       } else if (ch === "\x7f" || ch === "\b") {
         inputBuffer = inputBuffer.slice(0, -1);
       } else if (ch === "\x03" || ch === "\x15") {
@@ -952,6 +973,7 @@ export function createTab(tabId, profile, isLocal = false, initialState = "Conne
       term.write(data);
       broadcastMultiExecData(tabId, data);
       maybeLogSessionData(tabId, data);
+      try { notifyProcessOutput(tabId, data); } catch (_) {}
       if (!isLocal) {
         outputBuffer = (outputBuffer + data).slice(-500);
         handleTerminalOutputPrompt(tabId, outputBuffer);
@@ -983,11 +1005,13 @@ export function createTab(tabId, profile, isLocal = false, initialState = "Conne
         term.write(`\x1b[1;33m● Authenticating user '${profile.username}'...\x1b[0m\r\n`);
       } else if (st === "Connected") {
         term.write(`\x1b[1;32m● Connected to ${profile.host}\x1b[0m\r\n\r\n`);
+        showToast(`● Connected: ${profile.name || profile.host}`, "success", { eventType: "connect", isSystemEvent: true });
         if (switchSidebarViewFn) switchSidebarViewFn("sftp");
         const currentSFTPPath = (tabs[tabId] && tabs[tabId].sftpPath) || (profile && profile.initialDir) || "~";
         if (refreshSFTPFn) refreshSFTPFn(currentSFTPPath);
       } else if (st === "Failed") {
         renderTerminalDiagnosticCard(term, profile, errInfo);
+        showToast(`● Connection failed: ${profile.name || profile.host}`, "error", { isSystemEvent: true });
       }
     });
     if (typeof unsubState === "function") unsubs.push(unsubState);
@@ -1010,6 +1034,7 @@ export function createTab(tabId, profile, isLocal = false, initialState = "Conne
 
       setTabConnectionState(tabId, "Closed", errInfo, reason);
       term.write(`\r\n\x1b[1;31m[● Connection lost: ${errInfo.category} - ${errInfo.message}]\x1b[0m\r\n`);
+      showToast(`● Disconnected: ${profile.name || profile.host}`, "warning", { eventType: "disconnect", isSystemEvent: true });
       renderTerminalDiagnosticCard(term, profile, errInfo);
 
       if (!isLocal && tabs[tabId]) {

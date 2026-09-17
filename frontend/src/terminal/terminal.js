@@ -6,6 +6,7 @@
 
 import { getTabs, getActiveTabId, applyTabVisuals } from "../state/tabState.js";
 import { THEMES } from "../settings/settings.js";
+import { notifyPromptReturned } from "./processNotifier.js";
 
 let refreshSFTPCallback = null;
 
@@ -694,6 +695,7 @@ export function handleTerminalOutputPrompt(tabId, buffer) {
       applyTabVisuals(tabId);
     }
     syncPromptDir(tabId, bracketMatch[3].trim());
+    try { notifyPromptReturned(tabId); } catch (_) {}
     return;
   }
 
@@ -707,6 +709,7 @@ export function handleTerminalOutputPrompt(tabId, buffer) {
       applyTabVisuals(tabId);
     }
     syncPromptDir(tabId, colonMatch[3].trim());
+    try { notifyPromptReturned(tabId); } catch (_) {}
     return;
   }
 }

@@ -321,14 +321,16 @@ export function renderTabNotification(tabId) {
   const t = tabs[tabId];
   if (!t) return;
   const isNotif = t.notificationState && t.notificationState.active;
+  const isDone = isNotif && t.notificationState?.type === "process-done";
   const tooltip = isNotif
-    ? (t.notificationState.message || "Yellow dot: Attention / Notification required")
+    ? (t.notificationState.message || (isDone ? "Process completed on this tab" : "Yellow dot: Attention / Notification required"))
     : "";
 
   // 1. Main Top Tab Bar
   if (t.tabEl) {
     t.tabEl.classList.toggle("has-notification", isNotif);
     t.tabEl.classList.toggle("has-activity", isNotif);
+    t.tabEl.classList.toggle("has-process-done", isDone);
     let dot = t.tabEl.querySelector(".tab-notify-dot");
     if (!dot) {
       dot = document.createElement("span");
@@ -338,7 +340,13 @@ export function renderTabNotification(tabId) {
       else t.tabEl.appendChild(dot);
     }
     dot.style.display = isNotif ? "inline-flex" : "none";
-    dot.textContent = "•";
+    if (isDone) {
+      dot.className = "tab-notify-dot tab-done-badge";
+      dot.textContent = "✓ Done";
+    } else {
+      dot.className = "tab-notify-dot";
+      dot.textContent = "•";
+    }
     dot.title = tooltip;
   }
 
@@ -347,6 +355,7 @@ export function renderTabNotification(tabId) {
   paneTabs.forEach(pTab => {
     pTab.classList.toggle("has-notification", isNotif);
     pTab.classList.toggle("has-activity", isNotif);
+    pTab.classList.toggle("has-process-done", isDone);
     let pDot = pTab.querySelector(".tab-notify-dot");
     if (!pDot) {
       pDot = document.createElement("span");
@@ -356,7 +365,13 @@ export function renderTabNotification(tabId) {
       else pTab.appendChild(pDot);
     }
     pDot.style.display = isNotif ? "inline-flex" : "none";
-    pDot.textContent = "•";
+    if (isDone) {
+      pDot.className = "tab-notify-dot tab-done-badge";
+      pDot.textContent = "✓ Done";
+    } else {
+      pDot.className = "tab-notify-dot";
+      pDot.textContent = "•";
+    }
     pDot.title = tooltip;
   });
 
@@ -365,6 +380,7 @@ export function renderTabNotification(tabId) {
   if (connectedItem) {
     connectedItem.classList.toggle("has-notification", isNotif);
     connectedItem.classList.toggle("has-activity", isNotif);
+    connectedItem.classList.toggle("has-process-done", isDone);
     let cBadge = connectedItem.querySelector(".connected-notify-dot");
     if (!cBadge) {
       cBadge = document.createElement("span");
@@ -374,8 +390,10 @@ export function renderTabNotification(tabId) {
     }
     if (cBadge) {
       cBadge.style.display = isNotif ? "inline-flex" : "none";
-      cBadge.textContent = "•";
+      cBadge.textContent = isDone ? "✓" : "•";
       cBadge.title = tooltip;
+      if (isDone) cBadge.classList.add("connected-done-badge");
+      else cBadge.classList.remove("connected-done-badge");
     }
   }
 }
